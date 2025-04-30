@@ -1,0 +1,10 @@
+# Aktifkan Rewrite Engine
+RewriteEngine On
+
+# Redirect semua URL tidak valid ke notfound.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /notfound.php [L]
+
+# Mencegah direktori listing
+Options -Indexes

@@ -1,0 +1,107 @@
+body {
+    font-family: "Roboto", sans-serif;
+    background-color: #f3f3f3;
+}
+
+.bg-yellow {
+    background-color: #fad24d;
+}
+
+.text-green {
+    color: #42c3cf;
+}
+
+.btn-green {
+    background-color: #42c3cf;
+    color: #ffffff;
+    transition: transform 0.3s ease-in-out;
+    border-radius: 20px;
+}
+
+.btn-green:hover {
+    color: #ffffff;
+    transform: scale(1.05);
+}
+
+.btn-grey {
+    background-color: #697475;
+    color: #ffffff;
+}
+
+.btn-green:hover {
+    background-color: #42c3cf;
+}
+
+.btn-grey:hover {
+    background-color: #4d4d4d;
+}
+.logindokter{
+    display: block;
+    color:#fad24d;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: transform 0.3s ease-in-out;
+}
+
+.logindokter:hover{
+    transform: scale(1.15);
+}
+
+.registerpasien{
+    display: block;
+    color: #42c3cf;
+    transition: transform 0.3s ease-in-out;
+}
+
+.registerpasien:hover{
+    transform: scale(1.15);
+}
+
+.permanent-text::after {
+    content: "© Destio Wahyu. All Rights Reserved.";
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    padding: 10px 0;
+  }
+
+.row {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.16);
+    border: none;
+    background-color: #ffffff;
+    border-radius: 25px;
+    padding: 25px;
+}
+
+.container{
+    justify-content: center;
+    align-items: center;
+}
+
+.form-control {
+    border-radius: 20px;
+}
+
+.btn-primary {
+    background-color: #42c3cf;
+    border-color: #42c3cf;
+}
+
+.btn-primary:hover {
+    background-color: #35b5bf;
+    border-color: #35b5bf;
+}
+
+.btn-primary:active {
+    background-color: #2ea1a8;  /* Warna saat tombol ditekan */
+    border-color: #2ea1a8; /* Border saat tombol ditekan */
+    transform: scale(0.98); /* Opsional: Memberikan efek "tekanan" */
+}
+
+.btn-primary:active {
+    background-color: #2ea1a8 !important;
+    border-color: #2ea1a8 !important;
+    transform: scale(0.98);
+}
+
