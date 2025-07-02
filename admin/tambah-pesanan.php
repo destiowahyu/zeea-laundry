@@ -27,6 +27,35 @@ $adminData = $result_admin->fetch_assoc();
 $adminId = $adminData['id'];
 $adminName = $adminData['username'];
 
+// Function to generate a unique tracking code
+function generateTrackingCode($conn, $customer_id) {
+    // Format: ZL + YearMonthDay + 3-digit customer ID + 3 random alphanumeric
+    $date_part = date('ymd');
+    $customer_part = str_pad($customer_id, 3, '0', STR_PAD_LEFT);
+    
+    // Generate random alphanumeric suffix (3 characters)
+    $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $random_suffix = '';
+    for ($i = 0; $i < 3; $i++) {
+        $random_suffix .= $characters[rand(0, strlen($characters) - 1)];
+    }
+    
+    $tracking_code = "ZL{$date_part}{$customer_part}{$random_suffix}";
+    
+    // Check if tracking code already exists
+    $stmt = $conn->prepare("SELECT id FROM pesanan WHERE tracking_code = ?");
+    $stmt->bind_param("s", $tracking_code);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    // If exists, regenerate with a different random suffix
+    if ($result->num_rows > 0) {
+        return generateTrackingCode($conn, $customer_id);
+    }
+    
+    return $tracking_code;
+}
+
 // Proses form jika ada request AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
     // Set header to return JSON response
@@ -87,32 +116,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
             }
         }
         
+        // Generate a unique tracking code for this order group
+        $tracking_code = generateTrackingCode($conn, $pelanggan_id);
+        
         // Create separate orders for each package item
+        $total_harga = 0;
         $pesanan_ids = [];
         
         foreach ($paket_items as $item) {
             $berat = round(floatval($item['berat']), 2); // Round to 2 decimal places
             $paket_id = $item['paket_id'];
             $total_harga_item = floatval($item['total_harga']);
+            $total_harga += $total_harga_item;
             
-            // PERUBAHAN: Cek apakah paket custom sudah ada di database
+            // Check if paket custom already exists in database
             if ($paket_id === 'custom') {
-                // Cari paket custom yang sudah ada
+                // Find existing custom package
                 $stmt = $conn->prepare("SELECT id FROM paket WHERE nama = 'Paket Khusus'");
                 $stmt->execute();
                 $result = $stmt->get_result();
                 
                 if ($result->num_rows > 0) {
-                    // Gunakan paket custom yang sudah ada
+                    // Use existing custom package
                     $paket = $result->fetch_assoc();
                     $paket_id = $paket['id'];
                 } else {
-                    // Jika belum ada, buat paket custom baru (hanya sekali)
+                    // Create new custom package if it doesn't exist
                     $custom_name = "Paket Khusus";
-                    $custom_price = 0; // Harga default 0, karena harga sebenarnya akan disimpan di tabel pesanan
+                    $custom_price = 0; // Default price 0, actual price will be stored in pesanan table
                     $custom_icon = "custom.png";
                     
-                    // Salin file icon ke folder paket_icons jika belum ada
+                    // Copy icon file if it doesn't exist
                     $source_path = "../assets/images/custom.png";
                     $destination_path = "../assets/uploads/paket_icons/custom.png";
                     
@@ -120,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
                         copy($source_path, $destination_path);
                     }
                     
-                    // Buat entri paket custom sekali saja
+                    // Create custom package entry once
                     $stmt = $conn->prepare("INSERT INTO paket (nama, harga, keterangan, icon) VALUES (?, ?, 'Paket dengan harga kustom', ?)");
                     $stmt->bind_param("sds", $custom_name, $custom_price, $custom_icon);
                     $stmt->execute();
@@ -129,26 +163,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
                 }
             }
             
-            // Create order record - using the structure from your database
+            // Create order record with tracking code
             $status = 'diproses'; // Default status
-            $waktu = date('Y-m-d H:i:s'); // Gunakan waktu server yang sudah diatur zona waktunya
+            $waktu = date('Y-m-d H:i:s');
             
-            // PERUBAHAN: Tambahkan kolom harga_custom untuk menyimpan harga kustom
+            // Add harga_custom for custom price
             $harga_custom = ($item['paket_id'] === 'custom') ? floatval($item['harga_per_kg']) : 0;
             
-            // Cek apakah tabel pesanan memiliki kolom harga_custom
-            $check_column = $conn->query("SHOW COLUMNS FROM pesanan LIKE 'harga_custom'");
-            
-            if ($check_column->num_rows > 0) {
-                // Jika kolom harga_custom ada, gunakan dalam query
-                $stmt = $conn->prepare("INSERT INTO pesanan (id_pelanggan, id_paket, berat, harga, status, waktu, harga_custom) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("iidsssd", $pelanggan_id, $paket_id, $berat, $total_harga_item, $status, $waktu, $harga_custom);
-            } else {
-                // Jika kolom tidak ada, gunakan query original
-                $stmt = $conn->prepare("INSERT INTO pesanan (id_pelanggan, id_paket, berat, harga, status, waktu) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("iidsss", $pelanggan_id, $paket_id, $berat, $total_harga_item, $status, $waktu);
-            }
-            
+            // Insert order with tracking code
+            $stmt = $conn->prepare("INSERT INTO pesanan (tracking_code, id_pelanggan, id_paket, berat, harga, status, waktu, harga_custom) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("siidsssd", $tracking_code, $pelanggan_id, $paket_id, $berat, $total_harga_item, $status, $waktu, $harga_custom);
             $stmt->execute();
             
             $pesanan_ids[] = $conn->insert_id;
@@ -160,6 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
         echo json_encode([
             'status' => 'success',
             'message' => 'Pesanan berhasil dibuat',
+            'tracking_code' => $tracking_code,
             'pesanan_id' => $pesanan_ids[0] // Return the first order ID for redirection
         ]);
         
@@ -777,6 +802,29 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
             margin-bottom: 20px;
         }
         
+        /* Tracking Code Display */
+        .tracking-code-display {
+            background-color: rgba(66, 195, 207, 0.1);
+            border: 2px dashed #42c3cf;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .tracking-code-label {
+            font-size: 16px;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        
+        .tracking-code-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #42c3cf;
+            letter-spacing: 1px;
+        }
+        
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -882,7 +930,7 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
     <!-- Sidebar -->
-    <?php include 'sidebar_admin.php'; ?>
+    <?php include 'sidebar-admin.php'; ?>
 
     <!-- Main Content -->
      
@@ -1139,7 +1187,7 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
                 if (input.length >= 2) {
                     // Make AJAX request to search for customers
                     $.ajax({
-                        url: 'tambah_pesanan.php',
+                        url: 'tambah-pesanan.php',
                         type: 'GET',
                         data: { search_customer: input },
                         dataType: 'json',
@@ -1416,7 +1464,7 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
                     
                     $.ajax({
                         type: 'POST',
-                        url: 'tambah_pesanan.php',
+                        url: 'tambah-pesanan.php',
                         data: formData,
                         dataType: 'json',
                         headers: {
@@ -1429,12 +1477,17 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
                                 
                                 Swal.fire({
                                     title: 'Berhasil!',
-                                    text: 'Pesanan berhasil dibuat',
+                                    html: `
+                                        <p>Pesanan berhasil dibuat</p>
+                                        <div class="tracking-code-display mt-3">
+                                            <div class="tracking-code-label">Kode Tracking:</div>
+                                            <div class="tracking-code-value">${response.tracking_code}</div>
+                                        </div>
+                                    `,
                                     icon: 'success',
-                                    showConfirmButton: false,
-                                    timer: 2000
+                                    confirmButtonText: 'Lihat Daftar Pesanan'
                                 }).then(() => {
-                                    window.location.href = 'pesanan.php?'
+                                    window.location.href = 'pesanan.php';
                                 });
                             } else {
                                 Swal.fire({
@@ -1508,59 +1561,63 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
         // Add current paket to the list
         function addCurrentPaketToList() {
             const selectedPaket = $('.paket-card.selected');
-            if (selectedPaket.length > 0) {
-                const paketId = selectedPaket.data('id');
-                const paketName = selectedPaket.data('nama');
-                const berat = parseFloat($('#berat').val());
-                let hargaPerKg = 0;
-                
-                if (paketId === 'custom') {
-                    hargaPerKg = parseFloat($('#custom_price').val()) || 0;
-                } else {
-                    hargaPerKg = parseFloat(selectedPaket.data('harga'));
-                }
-                
-                const totalHarga = Math.round(berat * hargaPerKg * 100) / 100; // Round to 2 decimal places
-                
-                // Add to selected items
-                selectedPaketItems.push({
-                    paket_id: paketId,
-                    paket_name: paketName,
-                    berat: berat,
-                    harga_per_kg: hargaPerKg,
-                    total_harga: totalHarga,
-                    custom_price: paketId === 'custom' ? hargaPerKg : 0
-                });
+            if (selectedPaket.length === 0) return;
+            
+            const paketId = selectedPaket.data('id');
+            const paketNama = selectedPaket.data('nama');
+            const berat = parseFloat($('#berat').val());
+            
+            let hargaPerKg = 0;
+            let totalHarga = 0;
+            
+            if (paketId === 'custom') {
+                hargaPerKg = parseFloat($('#custom_price').val());
+                totalHarga = hargaPerKg * berat;
+            } else {
+                hargaPerKg = parseFloat(selectedPaket.data('harga'));
+                totalHarga = hargaPerKg * berat;
             }
+            
+            // Add to selected items
+            selectedPaketItems.push({
+                paket_id: paketId,
+                paket_nama: paketNama,
+                berat: berat,
+                harga_per_kg: hargaPerKg,
+                total_harga: totalHarga
+            });
         }
         
         // Update an existing paket item
         function updatePaketItem(index) {
+            if (index < 0 || index >= selectedPaketItems.length) return;
+            
             const selectedPaket = $('.paket-card.selected');
-            if (selectedPaket.length > 0 && index >= 0 && index < selectedPaketItems.length) {
-                const paketId = selectedPaket.data('id');
-                const paketName = selectedPaket.data('nama');
-                const berat = parseFloat($('#berat').val());
-                let hargaPerKg = 0;
-                
-                if (paketId === 'custom') {
-                    hargaPerKg = parseFloat($('#custom_price').val()) || 0;
-                } else {
-                    hargaPerKg = parseFloat(selectedPaket.data('harga'));
-                }
-                
-                const totalHarga = Math.round(berat * hargaPerKg * 100) / 100; // Round to 2 decimal places
-                
-                // Update the item at the specified index
-                selectedPaketItems[index] = {
-                    paket_id: paketId,
-                    paket_name: paketName,
-                    berat: berat,
-                    harga_per_kg: hargaPerKg,
-                    total_harga: totalHarga,
-                    custom_price: paketId === 'custom' ? hargaPerKg : 0
-                };
+            if (selectedPaket.length === 0) return;
+            
+            const paketId = selectedPaket.data('id');
+            const paketNama = selectedPaket.data('nama');
+            const berat = parseFloat($('#berat').val());
+            
+            let hargaPerKg = 0;
+            let totalHarga = 0;
+            
+            if (paketId === 'custom') {
+                hargaPerKg = parseFloat($('#custom_price').val());
+                totalHarga = hargaPerKg * berat;
+            } else {
+                hargaPerKg = parseFloat(selectedPaket.data('harga'));
+                totalHarga = hargaPerKg * berat;
             }
+            
+            // Update the item
+            selectedPaketItems[index] = {
+                paket_id: paketId,
+                paket_nama: paketNama,
+                berat: berat,
+                harga_per_kg: hargaPerKg,
+                total_harga: totalHarga
+            };
         }
         
         // Reset paket selection
@@ -1570,80 +1627,110 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
             $('#to-step4').prop('disabled', true);
         }
         
-        // Render paket items in summary
+        // Update summary
+        function updateSummary() {
+            $('#summary-nama').text($('#nama_pelanggan').val());
+            $('#summary-hp').text($('#no_hp').val());
+            
+            // Calculate total
+            let total = 0;
+            selectedPaketItems.forEach(item => {
+                total += item.total_harga;
+            });
+            
+            $('#summary-total').text('Rp ' + formatNumber(total));
+        }
+        
+        // Render paket items
         function renderPaketItems() {
             let html = '';
-            let totalPesanan = 0;
             
             if (selectedPaketItems.length === 0) {
-                html = '<p class="text-center text-muted">Belum ada paket yang dipilih</p>';
+                html = '<div class="text-center text-muted">Belum ada paket yang dipilih</div>';
             } else {
                 selectedPaketItems.forEach((item, index) => {
-                    totalPesanan += item.total_harga;
-                    
                     html += `
-                    <div class="paket-item">
-                        <div class="paket-item-header">
-                            <div class="paket-item-title">${item.paket_name}</div>
-                            <div class="paket-item-remove" data-index="${index}"><i class="fas fa-times-circle"></i></div>
+                        <div class="paket-item">
+                            <div class="paket-item-header">
+                                <div class="paket-item-title">${item.paket_nama}</div>
+                                <div class="paket-item-remove" data-index="${index}">
+                                    <i class="fas fa-times-circle"></i>
+                                </div>
+                            </div>
+                            <div class="paket-item-details">
+                                <div class="paket-item-label">Berat:</div>
+                                <div class="paket-item-value">${item.berat.toFixed(2)} kg</div>
+                            </div>
+                            <div class="paket-item-details">
+                                <div class="paket-item-label">Harga per Kg:</div>
+                                <div class="paket-item-value">Rp ${formatNumber(item.harga_per_kg)}</div>
+                            </div>
+                            <div class="paket-item-details">
+                                <div class="paket-item-label">Total Harga:</div>
+                                <div class="paket-item-value">Rp ${formatNumber(item.total_harga)}</div>
+                            </div>
                         </div>
-                        <div class="paket-item-details">
-                            <span class="paket-item-label">Berat:</span>
-                            <span class="paket-item-value">${item.berat.toFixed(2)} kg</span>
-                        </div>
-                        <div class="paket-item-details">
-                            <span class="paket-item-label">Harga per kg:</span>
-                            <span class="paket-item-value">Rp ${formatNumber(item.harga_per_kg)}</span>
-                        </div>
-                        <div class="paket-item-details">
-                            <span class="paket-item-label">Total:</span>
-                            <span class="paket-item-value">Rp ${formatNumber(item.total_harga)}</span>
-                        </div>
-                    </div>
                     `;
                 });
             }
             
             $('#paketItemsContainer').html(html);
-            $('#summary-total').text('Rp ' + formatNumber(totalPesanan));
         }
         
-        // Update summary
-        function updateSummary() {
-            // Update customer info
-            $('#summary-nama').text($('#nama_pelanggan').val());
-            $('#summary-hp').text($('#no_hp').val());
-        }
-        
-        // Update paket price when custom price changes
+        // Update paket price based on weight and selected paket
         function updatePaketPrice() {
-            const customPrice = parseFloat($('#custom_price').val()) || 0;
             const selectedPaket = $('.paket-card.selected');
+            if (selectedPaket.length === 0) return;
             
-            if (selectedPaket.length > 0 && selectedPaket.data('id') === 'custom') {
-                selectedPaket.data('harga', customPrice);
+            const paketId = selectedPaket.data('id');
+            const berat = parseFloat($('#berat').val());
+            
+            let hargaPerKg = 0;
+            
+            if (paketId === 'custom') {
+                hargaPerKg = parseFloat($('#custom_price').val());
+            } else {
+                hargaPerKg = parseFloat(selectedPaket.data('harga'));
             }
+            
+            const totalHarga = hargaPerKg * berat;
         }
         
-        // Validation functions
+        // Format number with thousand separator
+        function formatNumber(number) {
+            return new Intl.NumberFormat('id-ID').format(number);
+        }
+        
+        // Validate step 1
         function validateStep1() {
             const nama = $('#nama_pelanggan').val().trim();
             const noHp = $('#no_hp').val().trim();
             
             if (nama === '') {
                 Swal.fire({
-                    title: 'Perhatian!',
-                    text: 'Silakan masukkan nama pelanggan',
-                    icon: 'warning'
+                    title: 'Error!',
+                    text: 'Nama pelanggan harus diisi',
+                    icon: 'error'
                 });
                 return false;
             }
             
             if (noHp === '') {
                 Swal.fire({
-                    title: 'Perhatian!',
-                    text: 'Silakan masukkan nomor HP pelanggan',
-                    icon: 'warning'
+                    title: 'Error!',
+                    text: 'Nomor HP harus diisi',
+                    icon: 'error'
+                });
+                return false;
+            }
+            
+            // Validate phone number format
+            const phoneRegex = /^(\+62|62|0)[0-9]{9,13}$/;
+            if (!phoneRegex.test(noHp)) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Format nomor HP tidak valid',
+                    icon: 'error'
                 });
                 return false;
             }
@@ -1651,38 +1738,45 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
             return true;
         }
         
+        // Validate step 2
         function validateStep2() {
             const berat = parseFloat($('#berat').val());
+            
             if (isNaN(berat) || berat < 0.5) {
                 Swal.fire({
-                    title: 'Perhatian!',
-                    text: 'Berat cucian minimal 0.5 kg',
-                    icon: 'warning'
-                });
-                return false;
-            }
-            return true;
-        }
-        
-        function validateStep3() {
-            const selectedPaket = $('.paket-card.selected');
-            if (selectedPaket.length === 0) {
-                Swal.fire({
-                    title: 'Perhatian!',
-                    text: 'Silakan pilih paket laundry terlebih dahulu',
-                    icon: 'warning'
+                    title: 'Error!',
+                    text: 'Berat harus minimal 0.5 kg',
+                    icon: 'error'
                 });
                 return false;
             }
             
-            // Validate custom price if custom package is selected
-            if (selectedPaket.data('id') === 'custom') {
+            return true;
+        }
+        
+        // Validate step 3
+        function validateStep3() {
+            const selectedPaket = $('.paket-card.selected');
+            
+            if (selectedPaket.length === 0) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Silakan pilih paket laundry',
+                    icon: 'error'
+                });
+                return false;
+            }
+            
+            const paketId = selectedPaket.data('id');
+            
+            if (paketId === 'custom') {
                 const customPrice = parseFloat($('#custom_price').val());
+                
                 if (isNaN(customPrice) || customPrice <= 0) {
                     Swal.fire({
-                        title: 'Perhatian!',
-                        text: 'Silakan masukkan harga kustom yang valid',
-                        icon: 'warning'
+                        title: 'Error!',
+                        text: 'Harga kustom harus diisi dengan nilai lebih dari 0',
+                        icon: 'error'
                     });
                     return false;
                 }
@@ -1691,24 +1785,19 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
             return true;
         }
         
+        // Validate final step
         function validateFinalStep() {
             if (selectedPaketItems.length === 0) {
                 Swal.fire({
-                    title: 'Perhatian!',
-                    text: 'Silakan pilih minimal satu paket laundry',
-                    icon: 'warning'
+                    title: 'Error!',
+                    text: 'Belum ada paket yang dipilih',
+                    icon: 'error'
                 });
                 return false;
             }
             
             return true;
         }
-        
-        // Format number to Indonesian currency format
-        function formatNumber(number) {
-            return new Intl.NumberFormat('id-ID').format(number);
-        }
     </script>
 </body>
 </html>
-

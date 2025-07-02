@@ -11,7 +11,7 @@ date_default_timezone_set('Asia/Jakarta');
 $current_page = basename($_SERVER['PHP_SELF']);
 include '../includes/db.php';
 
-// Handle AJAX requests for status updates, soft delete, and restore
+// Handle AJAX requests for status updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     header('Content-Type: application/json');
     
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $status_pembayaran = $_POST['status_pembayaran'];
         
         // Update all orders with the same tracking code
-        $update_sql = "UPDATE pesanan SET status = ?, status_pembayaran = ? WHERE tracking_code = ? AND deleted_at IS NULL";
+        $update_sql = "UPDATE pesanan SET status = ?, status_pembayaran = ? WHERE tracking_code = ?";
         $stmt = $conn->prepare($update_sql);
         $stmt->bind_param("sss", $status, $status_pembayaran, $tracking_code);
         
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             // If status is completed, add to riwayat
             if ($status === 'selesai') {
                 $tgl_selesai = date('Y-m-d');
-                $get_orders = $conn->prepare("SELECT id, harga FROM pesanan WHERE tracking_code = ? AND deleted_at IS NULL");
+                $get_orders = $conn->prepare("SELECT id, harga FROM pesanan WHERE tracking_code = ?");
                 $get_orders->bind_param("s", $tracking_code);
                 $get_orders->execute();
                 $orders_result = $get_orders->get_result();
@@ -50,52 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             echo json_encode(['success' => true, 'message' => 'Status berhasil diperbarui']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Gagal memperbarui status']);
-        }
-        exit();
-    }
-    
-    // Handle soft delete
-    if ($_POST['action'] === 'soft_delete') {
-        $tracking_code = $_POST['tracking_code'];
-        
-        // Soft delete all orders with the same tracking code
-        $delete_sql = "UPDATE pesanan SET deleted_at = NOW() WHERE tracking_code = ? AND deleted_at IS NULL";
-        $stmt = $conn->prepare($delete_sql);
-        $stmt->bind_param("s", $tracking_code);
-        
-        if ($stmt->execute()) {
-            // Also soft delete related antar_jemput records
-            $delete_antar_sql = "UPDATE antar_jemput SET deleted_at = NOW() WHERE tracking_code = ? AND deleted_at IS NULL";
-            $stmt_antar = $conn->prepare($delete_antar_sql);
-            $stmt_antar->bind_param("s", $tracking_code);
-            $stmt_antar->execute();
-            
-            echo json_encode(['success' => true, 'message' => 'Pesanan berhasil dihapus']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Gagal menghapus pesanan']);
-        }
-        exit();
-    }
-    
-    // Handle restore
-    if ($_POST['action'] === 'restore') {
-        $tracking_code = $_POST['tracking_code'];
-        
-        // Restore all orders with the same tracking code
-        $restore_sql = "UPDATE pesanan SET deleted_at = NULL WHERE tracking_code = ? AND deleted_at IS NOT NULL";
-        $stmt = $conn->prepare($restore_sql);
-        $stmt->bind_param("s", $tracking_code);
-        
-        if ($stmt->execute()) {
-            // Also restore related antar_jemput records
-            $restore_antar_sql = "UPDATE antar_jemput SET deleted_at = NULL WHERE tracking_code = ? AND deleted_at IS NOT NULL";
-            $stmt_antar = $conn->prepare($restore_antar_sql);
-            $stmt_antar->bind_param("s", $tracking_code);
-            $stmt_antar->execute();
-            
-            echo json_encode(['success' => true, 'message' => 'Pesanan berhasil dipulihkan']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Gagal memulihkan pesanan']);
         }
         exit();
     }
@@ -146,7 +100,6 @@ $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : '';
 $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : '';
 $status_filter = isset($_GET['status']) ? $_GET['status'] : '';
 $payment_filter = isset($_GET['payment']) ? $_GET['payment'] : '';
-$show_deleted = isset($_GET['show_deleted']) ? $_GET['show_deleted'] === '1' : false;
 
 // PERBAIKAN: Filter periode waktu - jika ada filter manual, jangan gunakan periode
 $period_filter = '';
@@ -228,9 +181,6 @@ if (!$using_manual_date && !empty($period_filter)) {
     $period_range = ['label' => 'Filter Manual'];
 }
 
-// Determine deleted condition
-$deleted_condition = $show_deleted ? "p.deleted_at IS NOT NULL" : "p.deleted_at IS NULL";
-
 // PERBAIKAN: Query untuk statistik berdasarkan tracking_code (bukan individual pesanan)
 $stats_query = "SELECT 
     COUNT(DISTINCT p.tracking_code) as total_pesanan,
@@ -243,7 +193,7 @@ $stats_query = "SELECT
     COUNT(DISTINCT CASE WHEN p.status = 'selesai' THEN p.tracking_code END) as status_selesai
 FROM pesanan p 
 JOIN pelanggan pl ON p.id_pelanggan = pl.id 
-WHERE 1=1 AND $deleted_condition";
+WHERE 1=1";
 
 // Tambahkan kondisi filter untuk statistik
 if (!empty($search)) {
@@ -284,15 +234,14 @@ $query = "SELECT
           COUNT(p.id) as jumlah_item,
           SUM(p.harga) as total_harga,
           GROUP_CONCAT(pk.nama SEPARATOR ', ') as paket_list,
-          GROUP_CONCAT(p.berat SEPARATOR ', ') as berat_list,
-          MIN(p.deleted_at) as deleted_at
+          GROUP_CONCAT(p.berat SEPARATOR ', ') as berat_list
         FROM 
           pesanan p 
         JOIN 
           paket pk ON p.id_paket = pk.id 
         JOIN 
           pelanggan pl ON p.id_pelanggan = pl.id 
-        WHERE 1=1 AND $deleted_condition";
+        WHERE 1=1";
 
 // Tambahkan kondisi pencarian jika ada
 if (!empty($search)) {
@@ -323,7 +272,7 @@ if (!empty($payment_filter)) {
 // Karena kita mengelompokkan berdasarkan tracking_code, dan kolom lain seperti
 // id_pelanggan, status, status_pembayaran, nama_pelanggan, no_hp, dan waktu
 // cenderung konsisten untuk setiap tracking_code, kita menggunakan MIN()
-// untuk memilih satu nilai per grup, yang merupakan praktik umum untuk ONLY_FULL_GROUP_GROUP_BY.
+// untuk memilih satu nilai per grup, yang merupakan praktik umum untuk ONLY_FULL_GROUP_BY.
 $query .= " GROUP BY p.tracking_code";
 
 // Tambahkan pengurutan
@@ -332,11 +281,6 @@ $query .= " ORDER BY waktu DESC";
 
 // Eksekusi query
 $result = $conn->query($query);
-
-// Tambahkan setelah $show_deleted = ...
-$deleted_count_query = "SELECT COUNT(DISTINCT tracking_code) as deleted_count FROM pesanan WHERE deleted_at IS NOT NULL";
-$deleted_count_result = $conn->query($deleted_count_query);
-$deleted_count = $deleted_count_result->fetch_assoc()['deleted_count'];
 
 // Fungsi untuk mendapatkan badge status
 function getStatusBadge($status) {
@@ -387,7 +331,7 @@ function getPaketSummary($paket_list, $berat_list) {
 }
 
 // Cek apakah ada filter aktif
-$has_active_filters = !empty($search) || !empty($status_filter) || !empty($payment_filter) || $using_manual_date || ($period_filter !== 'this_month' && !$using_manual_date) || $show_deleted;
+$has_active_filters = !empty($search) || !empty($status_filter) || !empty($payment_filter) || $using_manual_date || ($period_filter !== 'this_month' && !$using_manual_date);
 ?>
 
 <!DOCTYPE html>
@@ -521,54 +465,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
 
         .btn-add-order i {
             font-size: 1.2rem;
-        }
-
-        /* View Toggle Buttons */
-        .view-toggle {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .view-toggle-btn {
-            background: #f8f9fa;
-            color: #6c757d;
-            border: 2px solid #e9ecef;
-            border-radius: 25px;
-            padding: 0.5rem 1.25rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .view-toggle-btn:hover {
-            background: rgba(66, 195, 207, 0.1);
-            color: #42c3cf;
-            border-color: #42c3cf;
-            text-decoration: none;
-        }
-
-        .view-toggle-btn.active {
-            background: #42c3cf;
-            color: white;
-            border-color: #42c3cf;
-            box-shadow: 0 4px 15px rgba(66, 195, 207, 0.3);
-        }
-
-        .view-toggle-btn.deleted {
-            background: #dc3545;
-            color: white;
-            border-color: #dc3545;
-        }
-
-        .view-toggle-btn.deleted:hover {
-            background: #c82333;
-            border-color: #c82333;
-            color: white;
         }
 
         /* PERBAIKAN: Period Filter Buttons dalam Filter Container */
@@ -731,15 +627,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
             border-bottom: none;
         }
 
-        .table tr.deleted-row {
-            background-color: rgba(220, 53, 69, 0.05);
-            opacity: 0.7;
-        }
-
-        .table tr.deleted-row:hover {
-            background-color: rgba(220, 53, 69, 0.1);
-        }
-
         .status-badge {
             padding: 6px 12px;
             border-radius: 20px;
@@ -896,17 +783,14 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 0.5rem;
-            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
             font-weight: 500;
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            width: 36px;
-            height: 36px;
+            gap: 0.4rem;
         }
 
         .btn-action:hover {
@@ -917,124 +801,25 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
         }
 
         .btn-whatsapp {
-            background: #25D366;
+            background: linear-gradient(135deg, #25D366, #128C7E);
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 0.5rem;
-            font-size: 0.9rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
             font-weight: 500;
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
+            gap: 0.4rem;
             cursor: pointer;
-            width: 36px;
-            height: 36px;
         }
 
         .btn-whatsapp:hover {
-            background:rgb(37, 211, 130);
+            background: linear-gradient(135deg, #128C7E, #075E54);
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-            color: white;
-        }
-
-        .btn-whatsapp:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-whatsapp.processing {
-            background:rgb(236, 177, 0);
-            cursor: pointer !important;
-            pointer-events: auto !important;
-            opacity: 1 !important;
-        }
-
-        .btn-whatsapp.processing:hover {
-            background:rgb(253, 210, 82);
-            cursor: pointer !important;
-        }
-
-        .btn-whatsapp.processing:not([disabled]) {
-            cursor: pointer !important;
-            pointer-events: auto !important;
-        }
-
-        .btn-whatsapp.completed {
-            background:  #28a745;
-            cursor: pointer !important;
-            pointer-events: auto !important;
-        }
-
-        .btn-whatsapp.completed:hover {
-            background: #25D366;
-        }
-
-        .btn-whatsapp.btn-cancelled {
-            background: #6c757d;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-whatsapp.btn-cancelled:hover {
-            background: #6c757d;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* Delete Button */
-        .btn-delete {
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.5rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            width: 36px;
-            height: 36px;
-        }
-
-        .btn-delete:hover {
-            background: #c82333;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-            color: white;
-        }
-
-        /* Restore Button */
-        .btn-restore {
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.5rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            width: 36px;
-            height: 36px;
-        }
-
-        .btn-restore:hover {
-            background: #218838;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
             color: white;
         }
 
@@ -1058,12 +843,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
             box-shadow: 0 8px 25px rgba(0,0,0,0.12);
         }
 
-        .order-card.deleted-card {
-            background: rgba(220, 53, 69, 0.05);
-            border-color: rgba(220, 53, 69, 0.2);
-            opacity: 0.8;
-        }
-
         .order-card-header {
             background: linear-gradient(135deg, #42c3cf, #36b5c0);
             padding: 1rem;
@@ -1071,10 +850,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .order-card-header.deleted-header {
-            background: linear-gradient(135deg, #dc3545, #c82333);
         }
 
         .order-card-body {
@@ -1173,21 +948,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
             100% { transform: rotate(360deg); }
         }
 
-        /* WhatsApp Status Indicators */
-        .whatsapp-status {
-            font-size: 0.7rem;
-            margin-top: 0.25rem;
-            display: block;
-        }
-
-        .status-processing-indicator {
-            color: #ffc107;
-        }
-
-        .status-completed-indicator {
-            color: #28a745;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .page-title {
@@ -1241,15 +1001,8 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
             }
 
             .btn-action,
-            .btn-whatsapp,
-            .btn-delete,
-            .btn-restore {
+            .btn-whatsapp {
                 width: 100%;
-                justify-content: center;
-            }
-
-            .view-toggle {
-                flex-wrap: wrap;
                 justify-content: center;
             }
         }
@@ -1286,38 +1039,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                 display: none;
             }
         }
-
-        /* Tambahkan/replace CSS di <style> agar sama dengan antar-jemput.php */
-        /* ... kode CSS lain ... */
-        .view-toggle {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .view-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            border: 2px solid #e9ecef;
-            background: white;
-            color: #6c757d;
-            font-weight: 500;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .view-btn.active {
-            background: #42c3cf;
-            color: white;
-            border-color: #42c3cf;
-            box-shadow: 0 2px 10px rgba(66, 195, 207, 0.3);
-        }
-        .view-btn:hover:not(.active) {
-            background: rgba(66, 195, 207, 0.1);
-            color: #42c3cf;
-            border-color: #42c3cf;
-        }
- 
     </style>
 </head>
 <body>
@@ -1338,30 +1059,16 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                 <i class="fas fa-plus-circle"></i> Tambah Pesanan Baru
             </a>
 
-            <!-- View Toggle -->
-            <div class="view-toggle">
-                <a href="?<?php echo http_build_query(array_merge($_GET, ['show_deleted' => '0'])); ?>"
-                   class="view-btn <?php echo !$show_deleted ? 'active' : ''; ?>">
-                    <i class="fas fa-list me-1"></i>Data Aktif
-                </a>
-                <?php if ($deleted_count > 0): ?>
-                <a href="?<?php echo http_build_query(array_merge($_GET, ['show_deleted' => '1'])); ?>"
-                   class="view-btn <?php echo $show_deleted ? 'active' : ''; ?>">
-                    <i class="fas fa-trash me-1"></i>Data Terhapus (<?php echo $deleted_count; ?>)
-                </a>
-                <?php endif; ?>
-            </div>
-
+            <!-- URUTAN BARU: 3. Statistics Dashboard -->
             <div class="stats-dashboard">
                 <div class="stat-card primary">
                     <div class="stat-icon primary">
                         <i class="fas fa-receipt"></i>
                     </div>
                     <div class="stat-number"><?php echo $stats['total_pesanan'] ?? 0; ?></div>
-                    <div class="stat-label"><?php echo $show_deleted ? 'Pesanan Terhapus' : 'Total Pesanan'; ?></div>
+                    <div class="stat-label">Total Pesanan</div>
                 </div>
                 
-                <?php if (!$show_deleted): ?>
                 <div class="stat-card success">
                     <div class="stat-icon success">
                         <i class="fas fa-money-bill-wave"></i>
@@ -1385,15 +1092,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                     <div class="stat-number"><?php echo $stats['status_selesai'] ?? 0; ?></div>
                     <div class="stat-label">Selesai</div>
                 </div>
-                <?php else: ?>
-                <div class="stat-card danger">
-                    <div class="stat-icon danger">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="stat-number"><?php echo number_format($stats['total_nilai'] ?? 0, 0, ',', '.'); ?></div>
-                    <div class="stat-label">Total Nilai (Rp)</div>
-                </div>
-                <?php endif; ?>
             </div>
 
             <!-- Current Filter Info -->
@@ -1401,9 +1099,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
             <div class="current-filter-info">
                 <h6><i class="fas fa-info-circle me-2"></i>Filter Aktif</h6>
                 <p>
-                    <?php if ($show_deleted): ?>
-                        <strong>Mode:</strong> Pesanan Terhapus |
-                    <?php endif; ?>
                     <?php if ($using_manual_date): ?>
                         <strong>Periode:</strong> Filter Manual
                         <?php if (!empty($date_from) && !empty($date_to)): ?>
@@ -1430,7 +1125,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
             <?php endif; ?>
 
             <!-- URUTAN BARU: 4. Filter Container (Gabungan) -->
-            <?php if (!$show_deleted): ?>
             <div class="filter-container">
                 <div class="filter-title">
                     <i class="fas fa-filter"></i>Filter Pesanan
@@ -1471,9 +1165,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                 
                 <!-- Advanced Filter Form -->
                 <form method="GET" action="">
-                    <?php if ($show_deleted): ?>
-                        <input type="hidden" name="show_deleted" value="1">
-                    <?php endif; ?>
                     <div class="row">
                         <div class="col-12 col-md-4">
                             <div class="mb-3">
@@ -1530,12 +1221,11 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                     </div>
                 </form>
             </div>
-            <?php endif; ?>
             
             <!-- URUTAN BARU: 5. Table Container -->
             <div class="table-container">
                 <div class="table-title">
-                    <span><i class="fas fa-table"></i><?php echo $show_deleted ? 'Pesanan Terhapus' : 'Daftar Pesanan'; ?></span>
+                    <span><i class="fas fa-table"></i>Daftar Pesanan</span>
                     <div class="text-muted">
                         Total: <?php echo $stats['total_pesanan']; ?> pesanan | 
                         Nilai: Rp <?php echo number_format($stats['total_nilai'] ?? 0, 0, ',', '.'); ?>
@@ -1555,11 +1245,9 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                                         <th width="150">Pelanggan</th>
                                         <th width="200">Paket</th>
                                         <th width="120">Total</th>
-                                        <?php if (!$show_deleted): ?>
                                         <th width="120">Status</th>
                                         <th width="140">Pembayaran</th>
-                                        <?php endif; ?>
-                                        <th width="200">Aksi</th>
+                                        <th width="160">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1568,7 +1256,7 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                                     $no = 1;
                                     while ($row = $result->fetch_assoc()): 
                                     ?>
-                                        <tr <?php echo $show_deleted ? 'class="deleted-row"' : ''; ?>>
+                                        <tr>
                                             <td><?php echo $no++; ?></td>
                                             <td>
                                                 <?php if (!empty($row['tracking_code'])): ?>
@@ -1602,7 +1290,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                                             <td>
                                                 <div class="price-amount">Rp <?php echo number_format($row['total_harga'], 0, ',', '.'); ?></div>
                                             </td>
-                                            <?php if (!$show_deleted): ?>
                                             <td>
                                                 <select class="status-dropdown status-<?php echo $row['status']; ?>" 
                                                         data-tracking="<?php echo $row['tracking_code']; ?>" 
@@ -1620,50 +1307,24 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                                                     <option value="sudah_dibayar" <?php echo $row['status_pembayaran'] === 'sudah_dibayar' ? 'selected' : ''; ?>>Sudah Dibayar</option>
                                                 </select>
                                             </td>
-                                            <?php endif; ?>
                                             <td>
                                                 <div class="action-buttons">
                                                     <a href="detail-pesanan.php?tracking=<?php echo urlencode($row['tracking_code']); ?>" class="btn-action" title="Detail">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <?php if (!$show_deleted): ?>
-                                                        <?php if ($row['status'] === 'diproses' || $row['status'] === 'selesai'): ?>
-                                                            <button type="button" class="btn-whatsapp <?php echo $row['status'] === 'diproses' ? 'processing' : 'completed'; ?>" 
-                                                                    data-phone="<?php echo htmlspecialchars($row['no_hp']); ?>"
-                                                                    data-name="<?php echo htmlspecialchars($row['nama_pelanggan']); ?>"
-                                                                    data-tracking="<?php echo htmlspecialchars($row['tracking_code']); ?>"
-                                                                    data-status="<?php echo htmlspecialchars($row['status']); ?>"
-                                                                    data-payment="<?php echo htmlspecialchars($row['status_pembayaran']); ?>"
-                                                                    data-total="<?php echo htmlspecialchars(number_format($row['total_harga'], 0, ',', '.')); ?>"
-                                                                    data-date="<?php echo htmlspecialchars(formatTanggalIndonesia($row['waktu'])); ?>"
-                                                                    data-paket="<?php echo htmlspecialchars($row['paket_list']); ?>"
-                                                                    data-berat="<?php echo htmlspecialchars($row['berat_list']); ?>"
-                                                                    title="Kirim WhatsApp - <?php echo $row['status'] === 'diproses' ? ' Notif Proses' : ' Notif Selesai'; ?>">
-                                                                <i class="fab fa-whatsapp"></i>
-                                                            </button>
-                                                        <?php elseif ($row['status'] === 'dibatalkan'): ?>
-                                                            <button type="button" class="btn-whatsapp btn-cancelled" disabled title="Pesanan dibatalkan - WhatsApp tidak tersedia">
-                                                                <i class="fab fa-whatsapp"></i>
-                                                            </button>
-                                                        <?php else: ?>
-                                                            <button type="button" class="btn-whatsapp" disabled title="WhatsApp hanya untuk status Diproses/Selesai">
-                                                                <i class="fab fa-whatsapp"></i>
-                                                            </button>
-                                                        <?php endif; ?>
-                                                        <button type="button" class="btn-delete" 
-                                                                data-tracking="<?php echo htmlspecialchars($row['tracking_code']); ?>"
-                                                                data-customer="<?php echo htmlspecialchars($row['nama_pelanggan']); ?>"
-                                                                title="Hapus Pesanan">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    <?php else: ?>
-                                                        <button type="button" class="btn-restore" 
-                                                                data-tracking="<?php echo htmlspecialchars($row['tracking_code']); ?>"
-                                                                data-customer="<?php echo htmlspecialchars($row['nama_pelanggan']); ?>"
-                                                                title="Pulihkan Pesanan">
-                                                            <i class="fas fa-undo"></i>
-                                                        </button>
-                                                    <?php endif; ?>
+                                                    <button type="button" class="btn-whatsapp" 
+                                                            data-phone="<?php echo str_replace(['+', ' '], '', $row['no_hp']); ?>"
+                                                            data-name="<?php echo htmlspecialchars($row['nama_pelanggan']); ?>"
+                                                            data-tracking="<?php echo $row['tracking_code']; ?>"
+                                                            data-status="<?php echo $row['status']; ?>"
+                                                            data-payment="<?php echo $row['status_pembayaran']; ?>"
+                                                            data-total="<?php echo number_format($row['total_harga'], 0, ',', '.'); ?>"
+                                                            data-date="<?php echo formatTanggalIndonesia($row['waktu']); ?>"
+                                                            data-paket="<?php echo htmlspecialchars($row['paket_list']); ?>"
+                                                            data-berat="<?php echo $row['berat_list']; ?>"
+                                                            title="WhatsApp">
+                                                        <i class="fab fa-whatsapp"></i>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -1680,8 +1341,8 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                         $no = 1;
                         while ($row = $result->fetch_assoc()):
                         ?>
-                            <div class="order-card <?php echo $show_deleted ? 'deleted-card' : ''; ?>">
-                                <div class="order-card-header <?php echo $show_deleted ? 'deleted-header' : ''; ?>">
+                            <div class="order-card">
+                                <div class="order-card-header">
                                     <div><strong>No. <?php echo $no++; ?></strong></div>
                                     <div><?php echo formatTanggalSingkat($row['waktu']); ?></div>
                                 </div>
@@ -1724,7 +1385,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                                             <div class="price-amount">Rp <?php echo number_format($row['total_harga'], 0, ',', '.'); ?></div>
                                         </div>
                                     </div>
-                                    <?php if (!$show_deleted): ?>
                                     <div class="order-card-item">
                                         <div class="order-card-label">Status:</div>
                                         <div class="order-card-value">
@@ -1748,49 +1408,24 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                                             </select>
                                         </div>
                                     </div>
-                                    <?php endif; ?>
                                 </div>
                                 <div class="order-card-footer">
                                     <div class="action-buttons">
                                         <a href="detail-pesanan.php?tracking=<?php echo urlencode($row['tracking_code']); ?>" class="btn-action">
-                                            <i class="fas fa-eye"></i>&nbsp;Detail
+                                            <i class="fas fa-eye"></i> Detail
                                         </a>
-                                        <?php if (!$show_deleted): ?>
-                                            <?php if ($row['status'] === 'diproses' || $row['status'] === 'selesai'): ?>
-                                                <button type="button" class="btn-whatsapp <?php echo $row['status'] === 'diproses' ? 'processing' : 'completed'; ?>" 
-                                                        data-phone="<?php echo htmlspecialchars($row['no_hp']); ?>"
-                                                        data-name="<?php echo htmlspecialchars($row['nama_pelanggan']); ?>"
-                                                        data-tracking="<?php echo htmlspecialchars($row['tracking_code']); ?>"
-                                                        data-status="<?php echo htmlspecialchars($row['status']); ?>"
-                                                        data-payment="<?php echo htmlspecialchars($row['status_pembayaran']); ?>"
-                                                        data-total="<?php echo htmlspecialchars(number_format($row['total_harga'], 0, ',', '.')); ?>"
-                                                        data-date="<?php echo htmlspecialchars(formatTanggalIndonesia($row['waktu'])); ?>"
-                                                        data-paket="<?php echo htmlspecialchars($row['paket_list']); ?>"
-                                                        data-berat="<?php echo htmlspecialchars($row['berat_list']); ?>">
-                                                    <i class="fab fa-whatsapp"></i>&nbsp;
-                                                     <?php echo $row['status'] === 'diproses' ? 'Notif Proses' : 'Notif Selesai'; ?>
-                                                </button>
-                                            <?php elseif ($row['status'] === 'dibatalkan'): ?>
-                                                <button type="button" class="btn-whatsapp btn-cancelled" disabled>
-                                                    <i class="fab fa-whatsapp"></i> Dibatalkan
-                                                </button>
-                                            <?php else: ?>
-                                                <button type="button" class="btn-whatsapp" disabled>
-                                                    <i class="fab fa-whatsapp"></i> Tidak Tersedia
-                                                </button>
-                                            <?php endif; ?>
-                                            <button type="button" class="btn-delete" 
-                                                    data-tracking="<?php echo htmlspecialchars($row['tracking_code']); ?>"
-                                                    data-customer="<?php echo htmlspecialchars($row['nama_pelanggan']); ?>">
-                                                <i class="fas fa-trash"></i>&nbsp;Hapus
-                                            </button>
-                                        <?php else: ?>
-                                            <button type="button" class="btn-restore" 
-                                                    data-tracking="<?php echo htmlspecialchars($row['tracking_code']); ?>"
-                                                    data-customer="<?php echo htmlspecialchars($row['nama_pelanggan']); ?>">
-                                                <i class="fas fa-undo"></i>&nbsp;Pulihkan
-                                            </button>
-                                        <?php endif; ?>
+                                        <button type="button" class="btn-whatsapp" 
+                                                data-phone="<?php echo str_replace(['+', ' '], '', $row['no_hp']); ?>"
+                                                data-name="<?php echo htmlspecialchars($row['nama_pelanggan']); ?>"
+                                                data-tracking="<?php echo $row['tracking_code']; ?>"
+                                                data-status="<?php echo $row['status']; ?>"
+                                                data-payment="<?php echo $row['status_pembayaran']; ?>"
+                                                data-total="<?php echo number_format($row['total_harga'], 0, ',', '.'); ?>"
+                                                data-date="<?php echo formatTanggalIndonesia($row['waktu']); ?>"
+                                                data-paket="<?php echo htmlspecialchars($row['paket_list']); ?>"
+                                                data-berat="<?php echo $row['berat_list']; ?>">
+                                            <i class="fab fa-whatsapp"></i> WhatsApp
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -1799,13 +1434,11 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                 <?php else: ?>
                     <div class="no-data">
                         <i class="fas fa-search"></i>
-                        <h5><?php echo $show_deleted ? 'Tidak Ada Pesanan Terhapus' : 'Tidak Ada Pesanan'; ?></h5>
-                        <p><?php echo $show_deleted ? 'Tidak ada pesanan yang terhapus untuk filter yang dipilih.' : 'Tidak ada pesanan yang ditemukan untuk filter yang dipilih.'; ?></p>
-                        <?php if (!$show_deleted): ?>
+                        <h5>Tidak Ada Pesanan</h5>
+                        <p>Tidak ada pesanan yang ditemukan untuk filter yang dipilih.</p>
                         <a href="tambah-pesanan.php" class="btn btn-primary">
                             <i class="fas fa-plus me-2"></i>Tambah Pesanan Baru
                         </a>
-                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
             </div>
@@ -1856,23 +1489,19 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                 e.clearSelection();
             });
 
-            // Handle status dropdown changes (event delegation for mobile compatibility)
-            $(document).on('change', '.status-dropdown', function() {
+            // Handle status dropdown changes
+            $('.status-dropdown').on('change', function() {
                 const trackingCode = $(this).data('tracking');
                 const type = $(this).data('type');
                 const newValue = $(this).val();
                 const $dropdown = $(this);
-
-                // Ambil value status/payment dari dropdown yang sedang diubah
-                let currentStatus, currentPayment;
-                if (type === 'status') {
-                    currentStatus = newValue;
-                    currentPayment = $(`select[data-tracking="${trackingCode}"][data-type="payment"]`).val();
-                } else {
-                    currentStatus = $(`select[data-tracking="${trackingCode}"][data-type="status"]`).val();
-                    currentPayment = newValue;
-                }
-                console.log('Final values to send (mobile fix):', { currentStatus, currentPayment });
+                
+                // Get current values
+                const $statusDropdown = $(`select[data-tracking="${trackingCode}"][data-type="status"]`);
+                const $paymentDropdown = $(`select[data-tracking="${trackingCode}"][data-type="payment"]`);
+                
+                const currentStatus = $statusDropdown.val();
+                const currentPayment = $paymentDropdown.val();
                 
                 // Show loading
                 $dropdown.prop('disabled', true);
@@ -1889,57 +1518,14 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                     },
                     dataType: 'json',
                     success: function(response) {
-                        // Ambil semua dropdown dan tombol WhatsApp yang terkait trackingCode
-                        const $statusDropdowns = $(`select.status-dropdown[data-tracking='${trackingCode}'][data-type='status']`);
-                        const $paymentDropdowns = $(`select.status-dropdown[data-tracking='${trackingCode}'][data-type='payment']`);
-                        const $whatsappBtns = $(`.btn-whatsapp[data-tracking='${trackingCode}']`);
-
                         if (response.success) {
-                            // Update semua dropdown status
-                            $statusDropdowns.each(function() {
-                                $(this).val(currentStatus)
-                                    .removeClass('status-diproses status-selesai status-dibatalkan')
-                                    .addClass('status-' + currentStatus);
-                            });
-                            // Update semua dropdown payment
-                            $paymentDropdowns.each(function() {
-                                $(this).val(currentPayment)
-                                    .removeClass('payment-belum_dibayar payment-sudah_dibayar')
-                                    .addClass('payment-' + currentPayment);
-                            });
-                            // Update semua tombol WhatsApp
-                            $whatsappBtns.each(function() {
-                                $(this).attr('data-status', currentStatus)
-                                       .attr('data-payment', currentPayment);
-                                // Update label mobile
-                                if ($(this).closest('.mobile-cards').length > 0) {
-                                    if (currentStatus === 'diproses') {
-                                        $(this).html('<i class="fab fa-whatsapp"></i>&nbsp;Notif Proses');
-                                    } else if (currentStatus === 'selesai') {
-                                        $(this).html('<i class="fab fa-whatsapp"></i>&nbsp;Notif Selesai');
-                                    } else if (currentStatus === 'dibatalkan') {
-                                        $(this).html('<i class="fab fa-whatsapp"></i> Dibatalkan');
-                                    } else {
-                                        $(this).html('<i class="fab fa-whatsapp"></i> Tidak Tersedia');
-                                    }
-                                }
-                                // Update enable/disable dan class
-                                if (currentStatus === 'diproses' || currentStatus === 'selesai') {
-                                    $(this).prop('disabled', false)
-                                           .removeClass('processing completed btn-cancelled')
-                                           .addClass(currentStatus === 'diproses' ? 'processing' : 'completed')
-                                           .attr('title', `Kirim WhatsApp - ${currentStatus === 'diproses' ? 'Notif Proses' : 'Notif Selesai'}`);
-                                } else if (currentStatus === 'dibatalkan') {
-                                    $(this).prop('disabled', true)
-                                           .removeClass('processing completed')
-                                           .addClass('btn-cancelled')
-                                           .attr('title', 'Pesanan dibatalkan - WhatsApp tidak tersedia');
-                                } else {
-                                    $(this).prop('disabled', true)
-                                           .attr('title', 'WhatsApp hanya untuk status Diproses/Selesai');
-                                }
-                            });
-                            // Tampilkan notifikasi sukses
+                            // Update dropdown classes
+                            $statusDropdown.removeClass('status-diproses status-selesai status-dibatalkan')
+                                          .addClass('status-' + currentStatus);
+                            $paymentDropdown.removeClass('payment-belum_dibayar payment-sudah_dibayar')
+                                           .addClass('payment-' + currentPayment);
+                            
+                            // Show success message
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil!',
@@ -1948,12 +1534,28 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                                 showConfirmButton: false
                             });
                         } else {
-                            // ... handle gagal ...
+                            // Revert dropdown value
+                            $dropdown.val($dropdown.data('original-value'));
+                            
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: response.message
+                            });
                         }
                     },
+                    error: function() {
+                        // Revert dropdown value
+                        $dropdown.val($dropdown.data('original-value'));
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan saat memperbarui status'
+                        });
+                    },
                     complete: function() {
-                        // Enable semua dropdown status & pembayaran
-                        $(`select.status-dropdown[data-tracking='${trackingCode}']`).prop('disabled', false);
+                        $dropdown.prop('disabled', false);
                     }
                 });
             });
@@ -1963,357 +1565,84 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                 $(this).data('original-value', $(this).val());
             });
 
-            // Handle soft delete
-            $('.btn-delete').on('click', function() {
-                const trackingCode = $(this).data('tracking');
-                const customerName = $(this).data('customer');
-                
-                Swal.fire({
-                    title: 'Konfirmasi Hapus Pesanan',
-                    html: `Apakah Anda yakin ingin menghapus pesanan dengan kode tracking <strong>${trackingCode}</strong> milik <strong>${customerName}</strong>?<br><br><small class="text-muted">Pesanan akan dihapus secara soft delete dan dapat dipulihkan jika diperlukan.</small>`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#dc3545',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="fas fa-trash"></i> Ya, Hapus!',
-                    cancelButtonText: '<i class="fas fa-times"></i> Batal',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Show loading
-                        Swal.fire({
-                            title: 'Menghapus...',
-                            text: 'Sedang memproses penghapusan pesanan',
-                            allowOutsideClick: false,
-                            allowEscapeKey: false,
-                            showConfirmButton: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        });
-                        
-                        // Send AJAX request
-                        $.ajax({
-                            url: 'pesanan.php',
-                            method: 'POST',
-                            data: {
-                                action: 'soft_delete',
-                                tracking_code: trackingCode
-                            },
-                            dataType: 'json',
-                            success: function(response) {
-                                if (response.success) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Berhasil!',
-                                        text: response.message,
-                                        timer: 2000,
-                                        showConfirmButton: false
-                                    }).then(() => {
-                                        // Reload page to refresh data
-                                        window.location.reload();
-                                    });
-                                } else {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Gagal!',
-                                        text: response.message
-                                    });
-                                }
-                            },
-                            error: function() {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: 'Terjadi kesalahan saat menghapus pesanan'
-                                });
-                            }
-                        });
-                    }
-                });
-            });
-
-            // Handle restore
-            $('.btn-restore').on('click', function() {
-                const trackingCode = $(this).data('tracking');
-                const customerName = $(this).data('customer');
-                
-                Swal.fire({
-                    title: 'Konfirmasi Pulihkan Pesanan',
-                    html: `Apakah Anda yakin ingin memulihkan pesanan dengan kode tracking <strong>${trackingCode}</strong> milik <strong>${customerName}</strong>?<br><br><small class="text-muted">Pesanan akan dipulihkan dan kembali aktif dalam sistem.</small>`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#28a745',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="fas fa-undo"></i> Ya, Pulihkan!',
-                    cancelButtonText: '<i class="fas fa-times"></i> Batal',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Show loading
-                        Swal.fire({
-                            title: 'Memulihkan...',
-                            text: 'Sedang memproses pemulihan pesanan',
-                            allowOutsideClick: false,
-                            allowEscapeKey: false,
-                            showConfirmButton: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        });
-                        
-                        // Send AJAX request
-                        $.ajax({
-                            url: 'pesanan.php',
-                            method: 'POST',
-                            data: {
-                                action: 'restore',
-                                tracking_code: trackingCode
-                            },
-                            dataType: 'json',
-                            success: function(response) {
-                                if (response.success) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Berhasil!',
-                                        text: response.message,
-                                        timer: 2000,
-                                        showConfirmButton: false
-                                    }).then(() => {
-                                        // Reload page to refresh data
-                                        window.location.reload();
-                                    });
-                                } else {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Gagal!',
-                                        text: response.message
-                                    });
-                                }
-                            },
-                            error: function() {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: 'Terjadi kesalahan saat memulihkan pesanan'
-                                });
-                            }
-                        });
-                    }
-                });
-            });
-
-            // Handle WhatsApp button clicks dengan data real-time
-            $(document).on('click', '.btn-whatsapp', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                console.log('WhatsApp button clicked');
-                
-                // Cek apakah tombol disabled
-                if ($(this).prop('disabled')) {
-                    console.log('Button is disabled');
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Tombol Tidak Aktif!',
-                        text: 'Tombol WhatsApp tidak aktif untuk status pesanan ini.',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    return false;
-                }
-                
-                // Cek apakah tombol dibatalkan
-                if ($(this).hasClass('btn-cancelled')) {
-                    console.log('Button is cancelled');
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Pesanan Dibatalkan!',
-                        text: 'WhatsApp tidak dapat dikirim untuk pesanan yang dibatalkan.',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    return false;
-                }
-
-                // Get basic data from button attributes
+            // Handle WhatsApp button clicks
+            $('.btn-whatsapp').on('click', function() {
                 const phone = $(this).data('phone');
                 const name = $(this).data('name');
                 const tracking = $(this).data('tracking');
+                const status = $(this).data('status');
+                const payment = $(this).data('payment');
                 const total = $(this).data('total');
                 const date = $(this).data('date');
                 const paket = $(this).data('paket');
                 const berat = $(this).data('berat');
-                
-                // Get current status data
-                const currentStatusData = getCurrentStatus(tracking);
-                const status = currentStatusData.status;
-                const payment = currentStatusData.payment;
-                
-                console.log('Data retrieved:', { phone, name, tracking, status, payment, total, date, paket, berat });
-                console.log('Status diambil dari dropdown:', status, 'Payment:', payment);
-                
-                if (!phone || !name || !tracking || !status) {
-                    console.log('Missing required data');
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Data Tidak Lengkap!',
-                        text: 'Data pesanan tidak lengkap. Silakan refresh halaman dan coba lagi.',
-                        timer: 3000,
-                        showConfirmButton: false
-                    });
-                    return false;
-                }
 
-                // Validasi status - HANYA BOLEH diproses atau selesai
-                if (status !== 'diproses' && status !== 'selesai') {
-                    console.log('Invalid status:', status);
+                let message = '';
+
+                if (status === 'diproses') {
+                    // Message for processing orders
+                    message = `*INI ADALAH PESAN OTOMATIS DARI SISTEM LAYANAN ZEEA LAUNDRY*
+
+Halo *${name}*,
+
+Pesanan laundry Anda telah masuk ke sistem dan sedang diproses.
+
+*Detail Pesanan:*
+- Kode Tracking: ${tracking}
+- Status: Sedang Diproses
+- Total: Rp ${total}
+
+Kami akan menghubungi Anda kembali ketika pesanan sudah selesai.
+
+Terima kasih telah menggunakan jasa Zeea Laundry.
+
+Salam, *Zeea Laundry*
+RT.02/RW.03, Jambangan, Padaran, Kabupaten Rembang, Jawa Tengah 59219
+WhatsApp: 0895395442010`;
+                } else if (status === 'selesai') {
+                    // Message for completed orders
+                    const paketArray = paket.split(', ');
+                    const beratArray = berat.split(', ');
+                    let paketDetails = '';
+                    
+                    for (let i = 0; i < paketArray.length; i++) {
+                        paketDetails += `- ${paketArray[i]}: ${parseFloat(beratArray[i]).toFixed(2)} kg\n`;
+                    }
+
+                    message = `*INI ADALAH PESAN OTOMATIS DARI SISTEM LAYANAN ZEEA LAUNDRY*
+
+Halo *${name}*,
+Pesanan laundry Anda telah *SELESAI*:
+
+*Detail Pesanan:*
+- Kode Tracking: ${tracking}
+- Tanggal Pesanan: ${date}
+
+*Detail Paket:*
+${paketDetails}
+*Total Harga: Rp ${total}*
+*Status Pembayaran: ${payment === 'sudah_dibayar' ? 'Sudah Dibayar' : 'Belum Dibayar'}*
+
+Silakan ambil cucian Anda di toko kami.
+
+Terima kasih telah menggunakan jasa Zeea Laundry.
+
+Salam, *Zeea Laundry*
+RT.02/RW.03, Jambangan, Padaran, Kabupaten Rembang, Jawa Tengah 59219
+WhatsApp: 0895395442010`;
+                } else {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Status Tidak Valid!',
-                        text: 'WhatsApp hanya dapat dikirim untuk pesanan dengan status "Diproses" atau "Selesai".',
-                        timer: 3000,
-                        showConfirmButton: false
+                        title: 'Perhatian!',
+                        text: 'WhatsApp hanya dapat dikirim untuk pesanan dengan status "Diproses" atau "Selesai".'
                     });
-                    return false;
+                    return;
                 }
 
-                // Generate WhatsApp message
-                let message = '';
-                const customerPageUrl = `https://laundry.destio.my.id/pelanggan/index.php?code=${encodeURIComponent(tracking)}`;
-                
-                if (status === 'diproses') {
-                    // Message untuk pesanan yang sedang diproses
-                    message = `*ZEEA LAUNDRY - NOTIFIKASI PESANAN*\n\n`;
-                    message += `Halo *${name}*,\n\n`;
-                    message += `Pesanan laundry Anda telah masuk ke sistem kami dan sedang *DIPROSES* 🔄\n\n`;
-                    message += `*DETAIL PESANAN:*\n`;
-                    message += `• Kode Tracking: *${tracking}*\n`;
-                    message += `• Tanggal Pesanan: ${date}\n`;
-                    message += `• Status: *Sedang Diproses*\n`;
-                    message += `• Total Harga: *Rp ${total}*\n`;
-                    message += `• Status Pembayaran: *${payment === 'sudah_dibayar' ? 'Sudah Dibayar' : 'Belum Dibayar'}*\n\n`;
-                    
-                    // Detail paket
-                    if (paket && berat) {
-                        const paketString = String(paket || '');
-                        const beratString = String(berat || '');
-                        
-                        if (paketString && beratString) {
-                            const paketArray = paketString.split(', ');
-                            const beratArray = beratString.split(', ');
-                            message += `*DETAIL PAKET:*\n`;
-                            for (let i = 0; i < paketArray.length; i++) {
-                                const beratValue = beratArray[i] || '0';
-                                const beratFormatted = parseFloat(beratValue).toFixed(2).replace('.', ',');
-                                message += `• ${paketArray[i]}: ${beratFormatted} kg\n`;
-                            }
-                        }
-                    }
-                    
-                    message += `\n*CEK STATUS PESANAN:*\n`;
-                    message += `Klik link berikut untuk mengecek status pesanan Anda secara real-time:\n`;
-                    message += `${customerPageUrl}\n\n`;
-                    message += `Atau masukkan kode tracking *${tracking}* di halaman pelanggan website kami.\n\n`;
-                    message += `Kami akan menghubungi Anda kembali ketika pesanan sudah selesai.\n\n`;
-                    message += `Terima kasih telah mempercayakan cucian Anda kepada kami!\n\n`;
-                    message += `*ZEEA LAUNDRY*\n`;
-                    message += `RT.02/RW.03, Jambangan, Padaran, Kabupaten Rembang, Jawa Tengah 59219\n`;
-                    message += `WhatsApp: 0895395442010`;
-                    
-                } else if (status === 'selesai') {
-                    // Message untuk pesanan yang sudah selesai
-                    message = `*ZEEA LAUNDRY - PESANAN SELESAI*\n\n`;
-                    message += `Halo *${name}*,\n\n`;
-                    message += `Kabar gembira! Pesanan laundry Anda telah *SELESAI* dan siap untuk diambil!\n\n`;
-                    message += `*DETAIL PESANAN:*\n`;
-                    message += `• Kode Tracking: *${tracking}*\n`;
-                    message += `• Tanggal Pesanan: ${date}\n`;
-                    message += `• Status: *SELESAI*\n`;
-                    message += `• Total Harga: *Rp ${total}*\n`;
-                    message += `• Status Pembayaran: *${payment === 'sudah_dibayar' ? 'Sudah Dibayar' : 'Belum Dibayar'}*\n\n`;
-                    
-                    if (paket && berat) {
-                        const paketString = String(paket || '');
-                        const beratString = String(berat || '');
-                        
-                        if (paketString && beratString) {
-                            const paketArray = paketString.split(', ');
-                            const beratArray = beratString.split(', ');
-                            message += `*PAKET YANG SUDAH SELESAI:*\n`;
-                            for (let i = 0; i < paketArray.length; i++) {
-                                const beratValue = beratArray[i] || '0';
-                                const beratFormatted = parseFloat(beratValue).toFixed(2).replace('.', ',');
-                                message += `• ${paketArray[i]}: ${beratFormatted} kg\n`;
-                            }
-                        }
-                    }
-                    
-                    message += `\n*CEK DETAIL LENGKAP:*\n`;
-                    message += `Untuk melihat detail lengkap pesanan, klik link berikut:\n`;
-                    message += `${customerPageUrl}\n\n`;
-                    
-                    message += `*SILAKAN AMBIL CUCIAN ANDA:*\n`;
-                    message += `Cucian Anda sudah siap dan dapat diambil di toko kami.\n\n`;
-                    message += `*Jam Operasional:*\n`;
-                    message += `Senin - Minggu: 06.30 - 21.00 WIB\n\n`;
-                    
-                    if (payment === 'belum_dibayar') {
-                        message += `*PERHATIAN:* Pembayaran belum lunas. Silakan lakukan pembayaran saat pengambilan.\n\n`;
-                    }
-                    
-                    message += `Terima kasih telah menggunakan jasa Zeea Laundry!\n`;
-                    message += `Kepuasan Anda adalah prioritas kami.\n\n`;
-                    message += `*ZEEA LAUNDRY*\n`;
-                    message += `RT.02/RW.03, Jambangan, Padaran, Kabupaten Rembang, Jawa Tengah 59219\n`;
-                    message += `WhatsApp: 0895395442010`;
-                }
-                
-                // Clean phone number and format for WhatsApp
-                let cleanPhone = phone.replace(/[^0-9]/g, '');
-                
-                // Add country code if not present
-                if (!cleanPhone.startsWith('62')) {
-                    if (cleanPhone.startsWith('0')) {
-                        cleanPhone = '62' + cleanPhone.substring(1);
-                    } else {
-                        cleanPhone = '62' + cleanPhone;
-                    }
-                }
-
-                console.log('Final phone number:', cleanPhone);
-                console.log('Message generated for status:', status);
-
-
-                const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-                console.log('Opening WhatsApp URL:', whatsappUrl);
-                
-                window.open(whatsappUrl, '_blank');
-                
-                // Show quick success notification
-                Swal.fire({
-                    title: 'WhatsApp Dibuka!',
-                    text: 'Aplikasi WhatsApp telah dibuka dengan pesan siap kirim.',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false,
-                    toast: true,
-                    position: 'top-end'
-                });
-                
-                return false;
+                // Open WhatsApp
+                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
             });
         });
-
-        // Fungsi untuk mendapatkan status dan payment terbaru dari dropdown
-        function getCurrentStatus(trackingCode) {
-            const statusDropdown = document.querySelector(`select[data-tracking="${trackingCode}"][data-type="status"]`);
-            const paymentDropdown = document.querySelector(`select[data-tracking="${trackingCode}"][data-type="payment"]`);
-            return {
-                status: statusDropdown ? statusDropdown.value : null,
-                payment: paymentDropdown ? paymentDropdown.value : null
-            };
-        }
     </script>
 </body>
 </html>

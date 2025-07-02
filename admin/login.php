@@ -767,7 +767,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="login-footer">
                 <p class="login-footer-text">Bukan admin?</p>
                 <a href="../pelanggan/" class="login-footer-link">
-                    Masuk sebagai pelanggan <i class="fas fa-arrow-right"></i>
+                    ke halaman pelanggan <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>

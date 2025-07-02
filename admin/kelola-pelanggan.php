@@ -123,7 +123,7 @@ if (isset($_POST['add_customer'])) {
         if ($insert_query->execute()) {
             $success_message = "Pelanggan berhasil ditambahkan";
             // Refresh halaman untuk memperbarui data
-            header("Location: kelola_pelanggan.php?added=true");
+            header("Location: kelola-pelanggan.php?added=true");
             exit();
         } else {
             $error_message = "Gagal menambahkan pelanggan: " . $conn->error;
@@ -168,7 +168,7 @@ if (isset($_POST['update_customer'])) {
         if ($update_query->execute()) {
             $success_message = "Data pelanggan berhasil diperbarui";
             // Refresh halaman untuk memperbarui data
-            header("Location: kelola_pelanggan.php?updated=true");
+            header("Location: kelola-pelanggan.php?updated=true");
             exit();
         } else {
             $error_message = "Gagal memperbarui data pelanggan: " . $conn->error;
@@ -199,7 +199,7 @@ if (isset($_POST['delete_id']) && !empty($_POST['delete_id'])) {
         if ($delete_query->execute()) {
             $delete_success = "Pelanggan berhasil dihapus.";
             // Refresh halaman untuk memperbarui data
-            header("Location: kelola_pelanggan.php?deleted=true");
+            header("Location: kelola-pelanggan.php?deleted=true");
             exit();
         } else {
             $delete_error = "Gagal menghapus pelanggan: " . $conn->error;
@@ -327,7 +327,7 @@ if (isset($_GET['ajax_search'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Pelanggan</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/admin/styles.css">
     <link rel="icon" type="image/png" href="../assets/images/zeea_laundry.png">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -681,7 +681,7 @@ if (isset($_GET['ajax_search'])) {
 <body>
 
     <!-- Sidebar -->
-    <?php include 'sidebar_admin.php'; ?>
+    <?php include 'sidebar-admin.php'; ?>
 
     <!-- Main Content -->
     <div class="content" id="content">
@@ -770,7 +770,7 @@ if (isset($_GET['ajax_search'])) {
                         
                         <!-- Form Actions -->
                         <div class="d-flex justify-content-between">
-                            <a href="kelola_pelanggan.php" class="btn btn-outline-secondary">Reset</a>
+                            <a href="kelola-pelanggan.php" class="btn btn-outline-secondary">Reset</a>
                             <button type="submit" class="btn btn-primary">Cari</button>
                         </div>
                     </form>
@@ -1054,7 +1054,7 @@ if (isset($_GET['ajax_search'])) {
                     const xhr = new XMLHttpRequest();
                     
                     // Configure it
-                    xhr.open('GET', 'kelola_pelanggan.php?ajax_search=1&search=' + encodeURIComponent(searchTerm), true);
+                    xhr.open('GET', 'kelola-pelanggan.php?ajax_search=1&search=' + encodeURIComponent(searchTerm), true);
                     
                     // Set up handler for when request finishes
                     xhr.onload = function() {

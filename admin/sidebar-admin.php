@@ -52,16 +52,16 @@ $adminFoto = $adminData['foto_profil'] ?? null;
     <a href="antar-jemput.php" class="<?php echo ($current_page == 'antar-jemput.php') ? 'active' : ''; ?>">
         <i class="fas fa-truck"></i> <span>Antar Jemput</span>
     </a>
-    <a href="laporan_pemasukan.php" class="<?php echo ($current_page == 'laporan_pemasukan.php') ? 'active' : ''; ?>">
+    <a href="laporan-pemasukan.php" class="<?php echo ($current_page == 'laporan-pemasukan.php') ? 'active' : ''; ?>">
         <i class="fas fa-wallet"></i> <span>Laporan Pemasukan</span>
     </a>
-    <a href="riwayat_transaksi.php" class="<?php echo ($current_page == 'riwayat_transaksi.php') ? 'active' : ''; ?>">
+    <a href="riwayat-transaksi.php" class="<?php echo ($current_page == 'riwayat-transaksi.php') ? 'active' : ''; ?>">
         <i class="fas fa-history"></i> <span>Riwayat Transaksi</span>
     </a>
-    <a href="kelola_pelanggan.php" class="<?php echo ($current_page == 'kelola_pelanggan.php') ? 'active' : ''; ?>">
+    <a href="kelola-pelanggan.php" class="<?php echo ($current_page == 'kelola-pelanggan.php') ? 'active' : ''; ?>">
         <i class="fas fa-users"></i> <span>Kelola Pelanggan</span>
     </a>
-    <a href="kelola_paket.php" class="<?php echo ($current_page == 'kelola_paket.php') ? 'active' : ''; ?>">
+    <a href="kelola-paket.php" class="<?php echo ($current_page == 'kelola-paket.php') ? 'active' : ''; ?>">
         <i class="fas fa-cogs"></i> <span>Kelola Paket</span>
     </a>
     <a href="profil.php" class="<?php echo ($current_page == 'profil.php') ? 'active' : ''; ?>">

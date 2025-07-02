@@ -29,13 +29,16 @@ $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM pesanan WHERE status = 'se
 $stmt->execute();
 $pesananSelesai = $stmt->get_result()->fetch_assoc()['total'];
 
-// Fetch total pemasukan hari ini
-$stmt = $conn->prepare("SELECT SUM(harga) AS total FROM pesanan WHERE DATE(waktu) = CURDATE()");
+// Fetch total pemasukan hari ini - PERBAIKAN: Handle null values
+$stmt = $conn->prepare("SELECT COALESCE(SUM(harga), 0) AS total FROM pesanan WHERE DATE(waktu) = CURDATE()");
 $stmt->execute();
 $pemasukanHariIni = $stmt->get_result()->fetch_assoc()['total'];
 
-// Get current store status
-$storeStatusQuery = "SELECT status, waktu FROM toko_status ORDER BY id DESC LIMIT 1";
+// Pastikan nilai tidak null untuk number_format
+$pemasukanHariIni = $pemasukanHariIni ?? 0;
+
+// Get current store status - hanya ambil record dengan id = 1
+$storeStatusQuery = "SELECT status, waktu FROM toko_status WHERE id = 1 LIMIT 1";
 $storeStatusResult = $conn->query($storeStatusQuery);
 $storeStatus = "buka"; // Default status is open
 $statusTime = "";
@@ -44,14 +47,20 @@ if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
     $statusRow = $storeStatusResult->fetch_assoc();
     $storeStatus = $statusRow['status'];
     $statusTime = date('d/m/Y H:i', strtotime($statusRow['waktu']));
+} else {
+    // Jika belum ada record, buat record pertama
+    $stmt = $conn->prepare("INSERT INTO toko_status (id, status, waktu) VALUES (1, 'buka', NOW())");
+    $stmt->execute();
+    $storeStatus = "buka";
+    $statusTime = date('d/m/Y H:i');
 }
 
 // Process store status update
 if (isset($_POST['update_status'])) {
-    $status = $_POST['update_status']; // Fixed from $_POST['status'] to $_POST['update_status']
+    $status = $_POST['update_status'];
     
-    // Insert new status
-    $stmt = $conn->prepare("INSERT INTO toko_status (status, waktu) VALUES (?, NOW())");
+    // Update existing record instead of inserting new one
+    $stmt = $conn->prepare("UPDATE toko_status SET status = ?, waktu = NOW() WHERE id = 1");
     $stmt->bind_param("s", $status);
     
     if ($stmt->execute()) {
@@ -77,7 +86,7 @@ $stmt->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Admin</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/admin/styles.css">
     <link rel="icon" type="image/png" href="../assets/images/zeea_laundry.png">
     <style>
@@ -93,7 +102,6 @@ $stmt->close();
         }
         
         .store-status-card:hover {
-            transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
         
@@ -315,7 +323,7 @@ $stmt->close();
     </style>
 </head>
 <body>
-    <?php include 'sidebar_admin.php'; ?>
+    <?php include 'sidebar-admin.php'; ?>
 
     <!-- Main Content -->
     <div class="content" id="content">
@@ -383,7 +391,7 @@ $stmt->close();
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a href="pesanan_selesai.php" style="text-decoration:none;">
+                        <a href="pesanan.php" style="text-decoration:none;">
                             <div class="card-dashboard h-100">
                                 <i class="fas fa-check-circle"></i>
                                 <h5>Pesanan Selesai</h5>
@@ -392,16 +400,16 @@ $stmt->close();
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a href="laporan_pemasukan.php" style="text-decoration:none;">
+                        <a href="laporan-pemasukan.php" style="text-decoration:none;">
                             <div class="card-dashboard h-100">
                                 <i class="fas fa-wallet"></i>
                                 <h5>Pemasukan Hari Ini</h5>
-                                <p><?= "Rp " . number_format($pemasukanHariIni, 0, ',', '.') ?></p>
+                                <p><?= "Rp " . number_format((float)$pemasukanHariIni, 0, ',', '.') ?></p>
                             </div>
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a href="riwayat_transaksi.php" style="text-decoration:none;">
+                        <a href="riwayat-transaksi.php" style="text-decoration:none;">
                             <div class="card-dashboard h-100">
                                 <i class="fas fa-history"></i>
                                 <h5>Riwayat Transaksi</h5>

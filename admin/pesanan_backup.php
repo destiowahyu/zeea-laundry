@@ -1856,23 +1856,30 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                 e.clearSelection();
             });
 
-            // Handle status dropdown changes (event delegation for mobile compatibility)
-            $(document).on('change', '.status-dropdown', function() {
+            // PERBAIKAN UTAMA: Fungsi untuk mendapatkan status terbaru dari dropdown
+            function getCurrentStatus(trackingCode) {
+                const statusDropdown = document.querySelector(`select[data-tracking="${trackingCode}"][data-type="status"]`);
+                const paymentDropdown = document.querySelector(`select[data-tracking="${trackingCode}"][data-type="payment"]`);
+                
+                return {
+                    status: statusDropdown ? statusDropdown.value : null,
+                    payment: paymentDropdown ? paymentDropdown.value : null
+                };
+            }
+
+            // Handle status dropdown changes
+            $('.status-dropdown').on('change', function() {
                 const trackingCode = $(this).data('tracking');
                 const type = $(this).data('type');
                 const newValue = $(this).val();
                 const $dropdown = $(this);
-
-                // Ambil value status/payment dari dropdown yang sedang diubah
-                let currentStatus, currentPayment;
-                if (type === 'status') {
-                    currentStatus = newValue;
-                    currentPayment = $(`select[data-tracking="${trackingCode}"][data-type="payment"]`).val();
-                } else {
-                    currentStatus = $(`select[data-tracking="${trackingCode}"][data-type="status"]`).val();
-                    currentPayment = newValue;
-                }
-                console.log('Final values to send (mobile fix):', { currentStatus, currentPayment });
+                
+                // Get current values
+                const $statusDropdown = $(`select[data-tracking="${trackingCode}"][data-type="status"]`);
+                const $paymentDropdown = $(`select[data-tracking="${trackingCode}"][data-type="payment"]`);
+                
+                const currentStatus = $statusDropdown.val();
+                const currentPayment = $paymentDropdown.val();
                 
                 // Show loading
                 $dropdown.prop('disabled', true);
@@ -1889,57 +1896,32 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                     },
                     dataType: 'json',
                     success: function(response) {
-                        // Ambil semua dropdown dan tombol WhatsApp yang terkait trackingCode
-                        const $statusDropdowns = $(`select.status-dropdown[data-tracking='${trackingCode}'][data-type='status']`);
-                        const $paymentDropdowns = $(`select.status-dropdown[data-tracking='${trackingCode}'][data-type='payment']`);
-                        const $whatsappBtns = $(`.btn-whatsapp[data-tracking='${trackingCode}']`);
-
                         if (response.success) {
-                            // Update semua dropdown status
-                            $statusDropdowns.each(function() {
-                                $(this).val(currentStatus)
-                                    .removeClass('status-diproses status-selesai status-dibatalkan')
-                                    .addClass('status-' + currentStatus);
-                            });
-                            // Update semua dropdown payment
-                            $paymentDropdowns.each(function() {
-                                $(this).val(currentPayment)
-                                    .removeClass('payment-belum_dibayar payment-sudah_dibayar')
-                                    .addClass('payment-' + currentPayment);
-                            });
-                            // Update semua tombol WhatsApp
-                            $whatsappBtns.each(function() {
-                                $(this).attr('data-status', currentStatus)
-                                       .attr('data-payment', currentPayment);
-                                // Update label mobile
-                                if ($(this).closest('.mobile-cards').length > 0) {
-                                    if (currentStatus === 'diproses') {
-                                        $(this).html('<i class="fab fa-whatsapp"></i>&nbsp;Notif Proses');
-                                    } else if (currentStatus === 'selesai') {
-                                        $(this).html('<i class="fab fa-whatsapp"></i>&nbsp;Notif Selesai');
-                                    } else if (currentStatus === 'dibatalkan') {
-                                        $(this).html('<i class="fab fa-whatsapp"></i> Dibatalkan');
-                                    } else {
-                                        $(this).html('<i class="fab fa-whatsapp"></i> Tidak Tersedia');
-                                    }
-                                }
-                                // Update enable/disable dan class
-                                if (currentStatus === 'diproses' || currentStatus === 'selesai') {
-                                    $(this).prop('disabled', false)
+                            // Update dropdown classes
+                            $statusDropdown.removeClass('status-diproses status-selesai status-dibatalkan')
+                                          .addClass('status-' + currentStatus);
+                            $paymentDropdown.removeClass('payment-belum_dibayar payment-sudah_dibayar')
+                                           .addClass('payment-' + currentPayment);
+                            
+                            // Update WhatsApp button state
+                            const $whatsappBtn = $(`.btn-whatsapp[data-tracking="${trackingCode}"]`);
+
+                            if (currentStatus === 'diproses' || currentStatus === 'selesai') {
+                                $whatsappBtn.prop('disabled', false)
                                            .removeClass('processing completed btn-cancelled')
                                            .addClass(currentStatus === 'diproses' ? 'processing' : 'completed')
-                                           .attr('title', `Kirim WhatsApp - ${currentStatus === 'diproses' ? 'Notif Proses' : 'Notif Selesai'}`);
-                                } else if (currentStatus === 'dibatalkan') {
-                                    $(this).prop('disabled', true)
+                                           .attr('title', `Kirim WhatsApp - ${currentStatus === 'diproses' ? ' Notif Proses' : ' Notif Selesai'}`);
+                            } else if (currentStatus === 'dibatalkan') {
+                                $whatsappBtn.prop('disabled', true)
                                            .removeClass('processing completed')
                                            .addClass('btn-cancelled')
                                            .attr('title', 'Pesanan dibatalkan - WhatsApp tidak tersedia');
-                                } else {
-                                    $(this).prop('disabled', true)
+                            } else {
+                                $whatsappBtn.prop('disabled', true)
                                            .attr('title', 'WhatsApp hanya untuk status Diproses/Selesai');
-                                }
-                            });
-                            // Tampilkan notifikasi sukses
+                            }
+                            
+                            // Show success message
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil!',
@@ -1948,12 +1930,28 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                                 showConfirmButton: false
                             });
                         } else {
-                            // ... handle gagal ...
+                            // Revert dropdown value
+                            $dropdown.val($dropdown.data('original-value'));
+                            
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: response.message
+                            });
                         }
                     },
+                    error: function() {
+                        // Revert dropdown value
+                        $dropdown.val($dropdown.data('original-value'));
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan saat memperbarui status'
+                        });
+                    },
                     complete: function() {
-                        // Enable semua dropdown status & pembayaran
-                        $(`select.status-dropdown[data-tracking='${trackingCode}']`).prop('disabled', false);
+                        $dropdown.prop('disabled', false);
                     }
                 });
             });
@@ -2103,7 +2101,7 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                 });
             });
 
-            // Handle WhatsApp button clicks dengan data real-time
+            // PERBAIKAN UTAMA: Handle WhatsApp button clicks dengan data real-time
             $(document).on('click', '.btn-whatsapp', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -2145,7 +2143,7 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                 const paket = $(this).data('paket');
                 const berat = $(this).data('berat');
                 
-                // Get current status data
+                // PERBAIKAN: Ambil status terbaru dari dropdown, bukan dari data attributes
                 const currentStatusData = getCurrentStatus(tracking);
                 const status = currentStatusData.status;
                 const payment = currentStatusData.payment;
@@ -2304,16 +2302,6 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                 return false;
             });
         });
-
-        // Fungsi untuk mendapatkan status dan payment terbaru dari dropdown
-        function getCurrentStatus(trackingCode) {
-            const statusDropdown = document.querySelector(`select[data-tracking="${trackingCode}"][data-type="status"]`);
-            const paymentDropdown = document.querySelector(`select[data-tracking="${trackingCode}"][data-type="payment"]`);
-            return {
-                status: statusDropdown ? statusDropdown.value : null,
-                payment: paymentDropdown ? paymentDropdown.value : null
-            };
-        }
     </script>
 </body>
 </html>

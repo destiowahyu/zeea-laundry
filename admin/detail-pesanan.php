@@ -5,12 +5,10 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
-
 date_default_timezone_set('Asia/Jakarta');
 
-$current_page = basename($_SERVER['PHP_SELF']);
+$current_page = 'pesanan.php';
 include '../includes/db.php';
-
 
 $adminUsername = $_SESSION['username'];
 $query_admin = $conn->prepare("SELECT id, username FROM admin WHERE username = ?");
@@ -27,21 +25,25 @@ $adminData = $result_admin->fetch_assoc();
 $adminId = $adminData['id'];
 $adminName = $adminData['username'];
 
-
-if (!isset($_GET['id']) || empty($_GET['id'])) {
+// Check if tracking code is provided
+if (!isset($_GET['tracking']) || empty($_GET['tracking'])) {
     header("Location: pesanan.php");
     exit();
 }
 
-$pesanan_id = $_GET['id'];
+$tracking_code = $_GET['tracking'];
 
-
+// Query to get order details by tracking code
 $query_pesanan_utama = "SELECT p.*, pl.nama as nama_pelanggan, pl.no_hp 
                  FROM pesanan p 
                  JOIN pelanggan pl ON p.id_pelanggan = pl.id 
-                 WHERE p.id = $pesanan_id";
+                 WHERE p.tracking_code = ? 
+                 LIMIT 1";
 
-$result_pesanan_utama = $conn->query($query_pesanan_utama);
+$stmt = $conn->prepare($query_pesanan_utama);
+$stmt->bind_param("s", $tracking_code);
+$stmt->execute();
+$result_pesanan_utama = $stmt->get_result();
 
 if ($result_pesanan_utama->num_rows === 0) {
     echo "Pesanan tidak ditemukan. Silahkan kembali ke halaman sebelumnya.";
@@ -50,60 +52,103 @@ if ($result_pesanan_utama->num_rows === 0) {
 
 $pesanan_utama = $result_pesanan_utama->fetch_assoc();
 
+// Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['update_all'])) {
         $new_status = $_POST['status'];
         $new_payment_status = $_POST['status_pembayaran'];
         
-       
-        $id_pelanggan = $pesanan_utama['id_pelanggan'];
-        $waktu_pesanan = $pesanan_utama['waktu'];
+        // Update all orders with the same tracking code
+        $update_sql = "UPDATE pesanan SET status = ?, status_pembayaran = ? WHERE tracking_code = ?";
+        $update_stmt = $conn->prepare($update_sql);
+        $update_stmt->bind_param("sss", $new_status, $new_payment_status, $tracking_code);
         
-        
-        $update_sql = "UPDATE pesanan SET status = '$new_status', status_pembayaran = '$new_payment_status' 
-                      WHERE id_pelanggan = $id_pelanggan AND waktu = '$waktu_pesanan'";
-        
-        
-        if ($conn->query($update_sql)) {
+        if ($update_stmt->execute()) {
             $success_message = "Status pesanan berhasil diperbarui menjadi " . ucfirst($new_status) . " dan status pembayaran menjadi " . 
                               ($new_payment_status === 'sudah_dibayar' ? 'Sudah Dibayar' : 'Belum Dibayar') . ".";
-            
             
             if ($new_status === 'selesai') {
                 $tgl_selesai = date('Y-m-d');
                 
-                $get_all_ids = $conn->query("SELECT id, harga FROM pesanan WHERE id_pelanggan = $id_pelanggan AND waktu = '$waktu_pesanan'");
+                // Get all related orders
+                $get_all_ids = $conn->prepare("SELECT id, harga FROM pesanan WHERE tracking_code = ?");
+                $get_all_ids->bind_param("s", $tracking_code);
+                $get_all_ids->execute();
+                $all_orders = $get_all_ids->get_result();
                 
-                while ($pesanan_item = $get_all_ids->fetch_assoc()) {
+                while ($pesanan_item = $all_orders->fetch_assoc()) {
                     $item_id = $pesanan_item['id'];
                     $item_harga = $pesanan_item['harga'];
                     
-                    $check_riwayat = $conn->query("SELECT id FROM riwayat WHERE id_pesanan = $item_id");
+                    $check_riwayat = $conn->prepare("SELECT id FROM riwayat WHERE id_pesanan = ?");
+                    $check_riwayat->bind_param("i", $item_id);
+                    $check_riwayat->execute();
                     
-                    if ($check_riwayat->num_rows === 0) {
-                        $conn->query("INSERT INTO riwayat (id_pesanan, tgl_selesai, harga) VALUES ($item_id, '$tgl_selesai', $item_harga)");
+                    if ($check_riwayat->get_result()->num_rows === 0) {
+                        $insert_riwayat = $conn->prepare("INSERT INTO riwayat (id_pesanan, tgl_selesai, harga) VALUES (?, ?, ?)");
+                        $insert_riwayat->bind_param("isd", $item_id, $tgl_selesai, $item_harga);
+                        $insert_riwayat->execute();
                     }
                 }
             }
             
-            $result_pesanan_utama = $conn->query($query_pesanan_utama);
+            // Refresh data
+            $stmt->execute();
+            $result_pesanan_utama = $stmt->get_result();
             $pesanan_utama = $result_pesanan_utama->fetch_assoc();
         } else {
             $error_message = "Gagal memperbarui status pesanan: " . $conn->error;
         }
     }
+    
+    // Handle edit order
+    if (isset($_POST['edit_order'])) {
+        $order_id = $_POST['order_id'];
+        $new_berat = floatval($_POST['berat']);
+        $new_paket_id = intval($_POST['paket_id']);
+        $harga_custom = isset($_POST['harga_custom']) ? floatval($_POST['harga_custom']) : null;
+        
+        // Get package price
+        $get_paket = $conn->prepare("SELECT harga FROM paket WHERE id = ?");
+        $get_paket->bind_param("i", $new_paket_id);
+        $get_paket->execute();
+        $paket_result = $get_paket->get_result();
+        $paket_data = $paket_result->fetch_assoc();
+        
+        // Calculate new price
+        $harga_per_kg = $harga_custom ? $harga_custom : $paket_data['harga'];
+        $new_total = $new_berat * $harga_per_kg;
+        
+        // Update order
+        $update_order_sql = "UPDATE pesanan SET id_paket = ?, berat = ?, harga = ?, harga_custom = ? WHERE id = ?";
+        $update_order_stmt = $conn->prepare($update_order_sql);
+        $update_order_stmt->bind_param("idddi", $new_paket_id, $new_berat, $new_total, $harga_custom, $order_id);
+        
+        if ($update_order_stmt->execute()) {
+            $success_message = "Pesanan berhasil diperbarui.";
+            
+            // Refresh data
+            $stmt->execute();
+            $result_pesanan_utama = $stmt->get_result();
+            $pesanan_utama = $result_pesanan_utama->fetch_assoc();
+        } else {
+            $error_message = "Gagal memperbarui pesanan: " . $conn->error;
+        }
+    }
 }
 
-$id_pelanggan = $pesanan_utama['id_pelanggan'];
-$waktu_pesanan = $pesanan_utama['waktu'];
-
+// Get all orders with the same tracking code
 $query_semua_item = "SELECT p.*, pk.nama as nama_paket, pk.harga as harga_paket 
                     FROM pesanan p 
                     JOIN paket pk ON p.id_paket = pk.id 
-                    WHERE p.id_pelanggan = $id_pelanggan 
-                    AND p.waktu = '$waktu_pesanan'";
+                    WHERE p.tracking_code = ?
+                    ORDER BY p.id ASC";
 
-$result_semua_item = $conn->query($query_semua_item);
+$stmt_items = $conn->prepare($query_semua_item);
+$stmt_items->bind_param("s", $tracking_code);
+$stmt_items->execute();
+$result_semua_item = $stmt_items->get_result();
+
 $items_pesanan = [];
 $total_harga_semua = 0;
 
@@ -112,6 +157,13 @@ while ($item = $result_semua_item->fetch_assoc()) {
     $total_harga_semua += $item['harga'];
 }
 
+// Get all packages for edit form
+$query_paket = "SELECT id, nama, harga FROM paket ORDER BY nama";
+$result_paket = $conn->query($query_paket);
+$paket_options = [];
+while ($paket = $result_paket->fetch_assoc()) {
+    $paket_options[] = $paket;
+}
 
 function formatTanggalIndonesia($tanggal) {
     $hari = array(
@@ -149,7 +201,6 @@ function getStatusBadge($status) {
     }
 }
 
-//status pembayaran
 function getPaymentStatusBadge($status) {
     switch ($status) {
         case 'belum_dibayar':
@@ -161,10 +212,13 @@ function getPaymentStatusBadge($status) {
     }
 }
 
-$query_layanan = "SELECT * FROM antar_jemput WHERE id_pesanan = $pesanan_id";
-$result_layanan = $conn->query($query_layanan);
+// Check for antar jemput service
+$query_layanan = "SELECT * FROM antar_jemput WHERE tracking_code = ? LIMIT 1";
+$stmt_layanan = $conn->prepare($query_layanan);
+$stmt_layanan->bind_param("s", $tracking_code);
+$stmt_layanan->execute();
+$result_layanan = $stmt_layanan->get_result();
 $layanan = $result_layanan->fetch_assoc();
-
 
 $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
 ?>
@@ -182,6 +236,7 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
     <link rel="icon" type="image/png" href="../assets/images/zeea_laundry.png">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
     <style>
         .content {
             padding: 60px 80px;
@@ -259,22 +314,14 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
+            gap: 10px;
         }
         
         .action-buttons .btn {
             flex: 1;
-            margin: 0 5px;
             border-radius: 10px;
             padding: 12px;
             font-weight: 500;
-        }
-        
-        .action-buttons .btn:first-child {
-            margin-left: 0;
-        }
-        
-        .action-buttons .btn:last-child {
-            margin-right: 0;
         }
         
         .btn-whatsapp {
@@ -351,6 +398,7 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
             padding: 15px;
             margin-bottom: 15px;
             border-left: 4px solid #42c3cf;
+            position: relative;
         }
         
         .paket-item:last-child {
@@ -425,6 +473,57 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
             background-color: #38adb8;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Edit Button */
+        .btn-edit {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ffc107;
+            color: #212529;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .btn-edit:hover {
+            background: #e0a800;
+            transform: scale(1.1);
+        }
+        
+        /* Edit Form */
+        .edit-form {
+            display: none;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .edit-form.show {
+            display: block;
+        }
+        
+        .edit-form .form-control {
+            margin-bottom: 10px;
+        }
+        
+        .edit-form .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .edit-form .btn-group .btn {
+            flex: 1;
         }
         
         /* Styling untuk form status pesanan dan pembayaran */
@@ -521,6 +620,91 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
             color: #42c3cf !important;
         }
         
+        /* Tracking code styles */
+        .tracking-code-container {
+            background-color: rgba(66, 195, 207, 0.1);
+            border: 2px dashed #42c3cf;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .tracking-code-label {
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .tracking-code-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #42c3cf !important;
+            letter-spacing: 1px;
+            word-break: break-all;
+            max-width: 100%;
+            background-color: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+        
+        .btn-copy {
+            white-space: nowrap;
+            background-color: white;
+            color:rgb(81, 81, 81);
+            border: 1px solid #42c3cf;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-copy:hover {
+            transform: scale(1.1);
+        }
+        
+        .btn-copy.copied {
+            color: #42c3cf;
+            animation: pulse 0.5s;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .custom-tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 1000;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        
+        .custom-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 5px 5px;
+            border-style: solid;
+            border-color: transparent transparent #333;
+        }
+        
         @media print {
             .no-print {
                 display: none !important;
@@ -610,6 +794,7 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
             
             .action-buttons .btn {
                 margin: 0;
+                margin-bottom: 10px;
             }
             
             .status-form {
@@ -640,12 +825,37 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
             .status-pembayaran-section {
                 padding: 12px;
             }
+            
+            .tracking-code-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+                background-color: rgba(66, 195, 207, 0.1) !important;
+            }
+            
+            .tracking-code-container > div {
+                flex: 1 1 auto;
+                min-width: 200px;
+            }
+            
+            .tracking-code-value {
+                font-size: 16px;
+                word-break: break-all;
+                background-color: transparent !important;
+                padding: 8px 0;
+                border-radius: 5px;
+                display: inline-block;
+                max-width: 100%;
+                color: #42c3cf !important;
+                border: none !important;
+            }
+            
         }
     </style>
 </head>
 <body>
     <!-- Sidebar -->
-    <?php include 'sidebar_admin.php'; ?>
+    <?php include 'sidebar-admin.php'; ?>
 
     <!-- Main Content -->
     <div class="content" id="content">
@@ -680,6 +890,18 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
                 </div>
                 
                 <div class="detail-body">
+                    <?php if (!empty($pesanan_utama['tracking_code'])): ?>
+                    <div class="tracking-code-container">
+                        <div>
+                            <span class="tracking-code-label">Kode Tracking:</span>
+                            <div class="tracking-code-value"><?php echo $pesanan_utama['tracking_code']; ?></div>
+                        </div>
+                        <button type="button" class="btn-copy" data-clipboard-text="<?php echo $pesanan_utama['tracking_code']; ?>" title="Salin Kode Tracking">
+                            <i class="fas fa-copy"></i> Salin
+                        </button>
+                    </div>
+                    <?php endif; ?>
+                    
                     <div class="detail-section">
                         <h3><i class="fas fa-user-circle"></i> Informasi Pelanggan</h3>
                         <div class="customer-info">
@@ -695,7 +917,12 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
                             <?php foreach ($items_pesanan as $item): ?>
                                 <div class="paket-item">
                                     <div class="paket-item-header">
-                                        <div class="paket-item-title"><?php echo $item['nama_paket']; ?></div>
+                                        <div class="paket-item-title d-flex align-items-center gap-2">
+                                            <?php if (!empty($item['icon'])): ?>
+                                                <img src="../assets/uploads/paket_icons/<?php echo htmlspecialchars($item['icon']); ?>" alt="<?php echo htmlspecialchars($item['nama_paket']); ?>" style="width:32px;height:32px;object-fit:contain;vertical-align:middle;">
+                                            <?php endif; ?>
+                                            <span><?php echo $item['nama_paket']; ?></span>
+                                        </div>
                                         <div class="paket-item-id">ID: #<?php echo $item['id']; ?></div>
                                     </div>
                                     <div class="paket-item-details">
@@ -717,6 +944,47 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
                                         <span class="paket-item-label">Total Harga:</span>
                                         <span class="paket-item-value">Rp <?php echo number_format($item['harga'], 0, ',', '.'); ?></span>
                                     </div>
+                                    <!-- Edit Form -->
+                                    <div class="edit-form no-print" id="edit-form-<?php echo $item['id']; ?>">
+                                        <form method="POST">
+                                            <input type="hidden" name="order_id" value="<?php echo $item['id']; ?>">
+                                            <div class="form-group">
+                                                <label>Paket:</label>
+                                                <select name="paket_id" class="form-control" required>
+                                                    <?php foreach ($paket_options as $paket): ?>
+                                                        <option value="<?php echo $paket['id']; ?>" 
+                                                                data-harga="<?php echo $paket['harga']; ?>"
+                                                                <?php echo $paket['id'] == $item['id_paket'] ? 'selected' : ''; ?>>
+                                                            <?php echo $paket['nama']; ?> - Rp <?php echo number_format($paket['harga'], 0, ',', '.'); ?>/kg
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Berat (kg):</label>
+                                                <input type="number" name="berat" class="form-control" step="0.01" min="0.01" 
+                                                       value="<?php echo $item['berat']; ?>" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Harga Custom (opsional, kosongkan untuk menggunakan harga paket):</label>
+                                                <input type="number" name="harga_custom" class="form-control" step="0.01" min="0" 
+                                                       value="<?php echo $item['harga_custom'] ?? ''; ?>" 
+                                                       placeholder="Masukkan harga custom per kg">
+                                            </div>
+                                            <div class="btn-group">
+                                                <button type="submit" name="edit_order" class="btn btn-success">
+                                                    <i class="fas fa-save"></i> Simpan
+                                                </button>
+                                                <button type="button" class="btn btn-secondary" onclick="toggleEditForm(<?php echo $item['id']; ?>)">
+                                                    <i class="fas fa-times"></i> Batal
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!-- Dedicated Edit Button -->
+                                    <button type="button" class="btn btn-warning mt-2 no-print" onclick="toggleEditForm(<?php echo $item['id']; ?>)">
+                                        <i class="fas fa-edit"></i> Edit Pesanan
+                                    </button>
                                 </div>
                             <?php endforeach; ?>
                             
@@ -748,31 +1016,31 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
                         
                         <?php if ($layanan): ?>
                         <div class="detail-item">
-                            <span class="detail-label">Layanan Antar/Jemput:</span>
+                            <span class="detail-label">Layanan Antar Jemput:</span>
                             <span class="detail-value"><?php echo ucfirst($layanan['layanan']); ?></span>
                         </div>
-                        
+
                         <?php if ($layanan['alamat_jemput']): ?>
                         <div class="detail-item">
                             <span class="detail-label">Alamat Jemput:</span>
                             <span class="detail-value"><?php echo $layanan['alamat_jemput']; ?></span>
                         </div>
                         <?php endif; ?>
-                        
+
                         <?php if ($layanan['alamat_antar']): ?>
                         <div class="detail-item">
                             <span class="detail-label">Alamat Antar:</span>
                             <span class="detail-value"><?php echo $layanan['alamat_antar']; ?></span>
                         </div>
                         <?php endif; ?>
-                        
+
                         <div class="detail-item">
                             <span class="detail-label">Status Layanan:</span>
                             <span class="detail-value"><?php echo ucfirst($layanan['status']); ?></span>
                         </div>
                         <?php endif; ?>
                     </div>
-                    
+
                     <!-- Combined Form for Update Status with Different Colors -->
                     <div class="status-form no-print">
                         <h3><i class="fas fa-edit"></i> Update Status Pesanan</h3>
@@ -817,14 +1085,14 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
                             </div>
                         </form>
                     </div>
-                    
+
                     <div class="action-buttons no-print">
-                        <button id="whatsappBtn" class="btn btn-whatsapp">
-                            <i class="fab fa-whatsapp"></i> Hubungi via WhatsApp
+                        <button id="waBtn" class="btn btn-whatsapp">
+                            <i class="fab fa-whatsapp"></i> Kirim WhatsApp
                         </button>
-                        <button onclick="window.print()" class="btn btn-print">
-                            <i class="fas fa-print"></i> Cetak Detail
-                        </button>
+                        <a href="print-detail-pesanan.php?tracking=<?php echo urlencode($pesanan_utama['tracking_code']); ?>" target="_blank" class="btn btn-print no-print">
+                            <i class="fas fa-print"></i> Cetak Struk
+                        </a>
                     </div>
                 </div>
             </div>
@@ -832,65 +1100,173 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Handling WhatsApp button
-        $(document).ready(function() {
-            $('#whatsappBtn').on('click', function() {
-                const orderStatus = '<?php echo $pesanan_utama['status']; ?>';
-                
-                if (orderStatus === 'selesai') {
-                    // If status is completed, proceed with WhatsApp
-                    const phoneNumber = '<?php echo str_replace(['+', ' '], '', $pesanan_utama['no_hp']); ?>';
-                    
-                    const message = `
-*INI ADALAH PESAN OTOMATIS DARI SISTEM LAYANAN ZEEA LAUNDRY*
+        // Initialize clipboard.js
+        var clipboard = new ClipboardJS('.btn-copy');
 
-Halo *<?php echo $pesanan_utama['nama_pelanggan']; ?>*,
-Pesanan laundry Anda dengan detail berikut telah *<?php echo ucfirst($pesanan_utama['status']); ?>*:
+        clipboard.on('success', function(e) {
+            // Show tooltip or notification
+            const button = e.trigger;
+            const originalTitle = button.getAttribute('title');
 
-*Detail Pesanan:*
-- ID Pesanan : #<?php echo $pesanan_id; ?>
+            button.setAttribute('title', 'Tersalin!');
+            button.classList.add('copied');
 
-- Tanggal Pesanan : <?php echo $tanggal_pesanan; ?>
+            setTimeout(function() {
+                button.setAttribute('title', originalTitle);
+                button.classList.remove('copied');
+            }, 1500);
 
+            e.clearSelection();
+        });
 
-*Detail Item:*
-<?php foreach ($items_pesanan as $item): ?>
-- Paket: <?php echo $item['nama_paket']; ?> 
-- Berat: <?php echo number_format($item['berat'], 2, ',', '.'); ?> kg
-- Harga per kg: Rp <?php 
-    if ($item['nama_paket'] === 'Paket Khusus' && isset($item['harga_custom']) && $item['harga_custom'] > 0) {
-        echo number_format($item['harga_custom'], 0, ',', '.');
-    } else {
-        echo number_format($item['harga_paket'], 0, ',', '.');
-    }
-?> 
-- Subtotal: Rp <?php echo number_format($item['harga'], 0, ',', '.'); ?>
+        // Add tooltip functionality
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+            tooltipTriggerEl.addEventListener('mouseenter', function() {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'custom-tooltip';
+                tooltip.textContent = this.getAttribute('title');
 
+                document.body.appendChild(tooltip);
 
-<?php endforeach; ?>
-- Total Harga Yang Harus Dibayar : *Rp <?php echo $harga_formatted; ?>*
-- Status Pembayaran : *<?php echo ($pesanan_utama['status_pembayaran'] === 'sudah_dibayar') ? 'Sudah Dibayar' : 'Belum Dibayar'; ?>*
+                const rect = this.getBoundingClientRect();
+                tooltip.style.top = rect.bottom + 5 + 'px';
+                tooltip.style.left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + 'px';
 
-Terima kasih telah menggunakan jasa Zeea Laundry.
-Silakan ambil cucian Anda di toko kami.
-
-Salam, *Zeea Laundry*
-RT.02/RW.03, Jambangan, Padaran, Kabupaten Rembang, Jawa Tengah 59219
-Whatsapp : 0895395442010
-`;
-                    
-                    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
-                } else {
-                    // If status is not completed, show warning
-                    Swal.fire({
-                        title: 'Perhatian!',
-                        text: 'Anda harus mengubah status pesanan menjadi "Selesai" terlebih dahulu sebelum menghubungi pelanggan via WhatsApp.',
-                        icon: 'warning',
-                        confirmButtonText: 'Mengerti'
-                    });
-                }
+                this.addEventListener('mouseleave', function() {
+                    document.body.removeChild(tooltip);
+                }, { once: true });
             });
-            
+        });
+
+        // Toggle edit form
+        function toggleEditForm(orderId) {
+            const form = document.getElementById('edit-form-' + orderId);
+            if (form.classList.contains('show')) {
+                form.classList.remove('show');
+            } else {
+                // Hide all other edit forms
+                document.querySelectorAll('.edit-form').forEach(f => f.classList.remove('show'));
+                form.classList.add('show');
+            }
+        }
+
+        // Enhanced WhatsApp functionality
+        $(document).ready(function() {
+            // Handle WhatsApp button (otomatis sesuai status)
+            $('#waBtn').on('click', function() {
+                // Data dari PHP
+                const status = '<?php echo $pesanan_utama['status']; ?>';
+                const payment = '<?php echo $pesanan_utama['status_pembayaran']; ?>';
+                const phone = '<?php echo str_replace(['+', ' '], '', $pesanan_utama['no_hp']); ?>';
+                const name = '<?php echo $pesanan_utama['nama_pelanggan']; ?>';
+                const tracking = '<?php echo $pesanan_utama['tracking_code']; ?>';
+                const total = '<?php echo $harga_formatted; ?>';
+                const date = '<?php echo $tanggal_pesanan; ?>';
+                let message = '';
+                const customerPageUrl = `http://localhost/zeea-laundry/pelanggan/tracking.php?code=${encodeURIComponent(tracking)}`;
+                if (status === 'diproses') {
+                    message = `*ZEEA LAUNDRY - NOTIFIKASI PESANAN*\n\n`;
+                    message += `Halo *${name}*,\n\n`;
+                    message += `Pesanan laundry Anda telah masuk ke sistem kami dan sedang *DIPROSES* 🔄\n\n`;
+                    message += `*DETAIL PESANAN:*\n`;
+                    message += `• Kode Tracking: *${tracking}*\n`;
+                    message += `• Tanggal Pesanan: ${date}\n`;
+                    message += `• Status: *Sedang Diproses*\n`;
+                    message += `• Total Harga: *Rp ${total}*\n`;
+                    message += `• Status Pembayaran: *${payment === 'sudah_dibayar' ? 'Sudah Dibayar' : 'Belum Dibayar'}*\n\n`;
+                    let itemDetails = '';
+                    <?php foreach ($items_pesanan as $item): ?>
+                    itemDetails += `• Paket: <?php echo $item['nama_paket']; ?>\n`;
+                    itemDetails += `• Berat: <?php echo number_format($item['berat'], 2, ',', '.'); ?> kg\n`;
+                    itemDetails += `• Harga per kg: Rp <?php
+                        if ($item['nama_paket'] === 'Paket Khusus' && isset($item['harga_custom']) && $item['harga_custom'] > 0) {
+                            echo number_format($item['harga_custom'], 0, ',', '.');
+                        } else {
+                            echo number_format($item['harga_paket'], 0, ',', '.');
+                        }
+                    ?>\n`;
+                    itemDetails += `• Subtotal: Rp <?php echo number_format($item['harga'], 0, ',', '.'); ?>\n\n`;
+                    <?php endforeach; ?>
+                    message += `*DETAIL PAKET:*\n${itemDetails}`;
+                    message += `*CEK STATUS PESANAN:*\n`;
+                    message += `Klik link berikut untuk mengecek status pesanan Anda secara real-time:\n`;
+                    message += `${customerPageUrl}\n\n`;
+                    message += `Atau masukkan kode tracking *${tracking}* di halaman pelanggan website kami.\n\n`;
+                    message += `Kami akan menghubungi Anda kembali ketika pesanan sudah selesai.\n\n`;
+                    message += `Terima kasih telah mempercayakan cucian Anda kepada kami!\n\n`;
+                    message += `*ZEEA LAUNDRY*\n`;
+                    message += `RT.02/RW.03, Jambangan, Padaran, Kabupaten Rembang, Jawa Tengah 59219\n`;
+                    message += `WhatsApp: 0895395442010`;
+                } else if (status === 'selesai') {
+                    message = `*ZEEA LAUNDRY - PESANAN SELESAI*\n\n`;
+                    message += `Halo *${name}*,\n\n`;
+                    message += `Kabar gembira! Pesanan laundry Anda telah *SELESAI* dan siap untuk diambil!\n\n`;
+                    message += `*DETAIL PESANAN:*\n`;
+                    message += `• Kode Tracking: *${tracking}*\n`;
+                    message += `• Tanggal Pesanan: ${date}\n`;
+                    message += `• Status: *SELESAI*\n`;
+                    message += `• Total Harga: *Rp ${total}*\n`;
+                    message += `• Status Pembayaran: *${payment === 'sudah_dibayar' ? 'Sudah Dibayar' : 'Belum Dibayar'}*\n\n`;
+                    let itemDetails = '';
+                    <?php foreach ($items_pesanan as $item): ?>
+                    itemDetails += `• Paket: <?php echo $item['nama_paket']; ?>\n`;
+                    itemDetails += `• Berat: <?php echo number_format($item['berat'], 2, ',', '.'); ?> kg\n`;
+                    itemDetails += `• Harga per kg: Rp <?php
+                        if ($item['nama_paket'] === 'Paket Khusus' && isset($item['harga_custom']) && $item['harga_custom'] > 0) {
+                            echo number_format($item['harga_custom'], 0, ',', '.');
+                        } else {
+                            echo number_format($item['harga_paket'], 0, ',', '.');
+                        }
+                    ?>\n`;
+                    itemDetails += `• Subtotal: Rp <?php echo number_format($item['harga'], 0, ',', '.'); ?>\n\n`;
+                    <?php endforeach; ?>
+                    message += `*PAKET YANG SUDAH SELESAI:*\n${itemDetails}`;
+                    message += `*CEK DETAIL LENGKAP:*\n`;
+                    message += `Untuk melihat detail lengkap pesanan, klik link berikut:\n`;
+                    message += `${customerPageUrl}\n\n`;
+                    message += `*SILAKAN AMBIL CUCIAN ANDA:*\n`;
+                    message += `Cucian Anda sudah siap dan dapat diambil di toko kami.\n\n`;
+                    message += `*Jam Operasional:*\n`;
+                    message += `Senin - Minggu: 06.30 - 21.00 WIB\n\n`;
+                    if (payment === 'belum_dibayar') {
+                        message += `*PERHATIAN:* Pembayaran belum lunas. Silakan lakukan pembayaran saat pengambilan.\n\n`;
+                    }
+                    message += `Terima kasih telah menggunakan jasa Zeea Laundry!\n`;
+                    message += `Kepuasan Anda adalah prioritas kami.\n\n`;
+                    message += `*ZEEA LAUNDRY*\n`;
+                    message += `RT.02/RW.03, Jambangan, Padaran, Kabupaten Rembang, Jawa Tengah 59219\n`;
+                    message += `WhatsApp: 0895395442010`;
+                } else if (status === 'dibatalkan') {
+                    message = `*ZEEA LAUNDRY - PESANAN DIBATALKAN*\n\n`;
+                    message += `Halo *${name}*,\n\n`;
+                    message += `Pesanan laundry Anda dengan kode tracking *${tracking}* telah *DIBATALKAN*.\n\n`;
+                    message += `Jika ini tidak sesuai, silakan hubungi admin kami.\n\n`;
+                    message += `*ZEEA LAUNDRY*\n`;
+                    message += `RT.02/RW.03, Jambangan, Padaran, Kabupaten Rembang, Jawa Tengah 59219\n`;
+                    message += `WhatsApp: 0895395442010`;
+                }
+                let cleanPhone = phone.replace(/[^0-9]/g, '');
+                if (!cleanPhone.startsWith('62')) {
+                    if (cleanPhone.startsWith('0')) {
+                        cleanPhone = '62' + cleanPhone.substring(1);
+                    } else {
+                        cleanPhone = '62' + cleanPhone;
+                    }
+                }
+                const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+                Swal.fire({
+                    title: 'WhatsApp Dibuka!',
+                    text: 'Pesan telah disiapkan dan WhatsApp dibuka.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            });
+
             // Konfigurasi SweetAlert2 custom
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
@@ -903,21 +1279,21 @@ Whatsapp : 0895395442010
                 },
                 buttonsStyling: false
             });
-            
+
             // Track if form has been changed
             let formChanged = false;
             const originalStatus = $('#status').val();
             const originalPaymentStatus = $('#status_pembayaran').val();
-            
+
             // Listen for changes on select elements
             $('#status, #status_pembayaran').on('change', function() {
                 const currentStatus = $('#status').val();
                 const currentPaymentStatus = $('#status_pembayaran').val();
-                
+
                 // Check if any value has changed
                 if (currentStatus !== originalStatus || currentPaymentStatus !== originalPaymentStatus) {
                     formChanged = true;
-                    
+
                     // Highlight the update button to draw attention
                     $('.update-btn').addClass('animate__animated animate__pulse animate__infinite');
                 } else {
@@ -925,33 +1301,33 @@ Whatsapp : 0895395442010
                     $('.update-btn').removeClass('animate__animated animate__pulse animate__infinite');
                 }
             });
-            
+
             // Reset form changed flag when form is submitted
             $('#updateStatusForm').on('submit', function() {
                 formChanged = false;
             });
-            
+
             // Show confirmation dialog when leaving page with unsaved changes
             window.addEventListener('beforeunload', function(e) {
                 if (formChanged) {
                     // Standard message (browsers will show their own message)
                     const confirmationMessage = 'Anda telah mengubah status tetapi belum menyimpannya. Apakah Anda yakin ingin meninggalkan halaman ini?';
-                    
+
                     // For older browsers
                     e.returnValue = confirmationMessage;
-                    
+
                     // For modern browsers
                     return confirmationMessage;
                 }
             });
-            
+
             // Add confirmation to back button and other links
             $('#backButton, a:not([href^="#"]):not([href^="javascript"]):not([href^="mailto"]):not([href^="tel"])').on('click', function(e) {
                 if (formChanged) {
                     e.preventDefault();
-                    
+
                     const targetHref = $(this).attr('href');
-                    
+
                     swalWithBootstrapButtons.fire({
                         title: '<i class="fas fa-exclamation-triangle text-warning mr-2"></i> Perubahan Belum Disimpan!',
                         html: '<div class="mb-3">Anda telah mengubah status pesanan tetapi belum menyimpannya.</div><div>Apa yang ingin Anda lakukan?</div>',
@@ -982,7 +1358,7 @@ Whatsapp : 0895395442010
                     });
                 }
             });
-            
+
             // Add animation library
             const animateCSSLink = document.createElement('link');
             animateCSSLink.rel = 'stylesheet';
@@ -992,4 +1368,3 @@ Whatsapp : 0895395442010
     </script>
 </body>
 </html>
-
