@@ -106,7 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $order_id = $_POST['order_id'];
         $new_berat = floatval($_POST['berat']);
         $new_paket_id = intval($_POST['paket_id']);
-        $harga_custom = isset($_POST['harga_custom']) ? floatval($_POST['harga_custom']) : null;
         
         // Get package price
         $get_paket = $conn->prepare("SELECT harga FROM paket WHERE id = ?");
@@ -115,14 +114,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $paket_result = $get_paket->get_result();
         $paket_data = $paket_result->fetch_assoc();
         
-        // Calculate new price
-        $harga_per_kg = $harga_custom ? $harga_custom : $paket_data['harga'];
+        // Calculate new price using package price
+        $harga_per_kg = $paket_data['harga'];
         $new_total = $new_berat * $harga_per_kg;
         
-        // Update order
-        $update_order_sql = "UPDATE pesanan SET id_paket = ?, berat = ?, harga = ?, harga_custom = ? WHERE id = ?";
+        // Update order (remove harga_custom field)
+        $update_order_sql = "UPDATE pesanan SET id_paket = ?, berat = ?, harga = ? WHERE id = ?";
         $update_order_stmt = $conn->prepare($update_order_sql);
-        $update_order_stmt->bind_param("idddi", $new_paket_id, $new_berat, $new_total, $harga_custom, $order_id);
+        $update_order_stmt->bind_param("iddi", $new_paket_id, $new_berat, $new_total, $order_id);
         
         if ($update_order_stmt->execute()) {
             $success_message = "Pesanan berhasil diperbarui.";
@@ -138,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Get all orders with the same tracking code
-$query_semua_item = "SELECT p.*, pk.nama as nama_paket, pk.harga as harga_paket 
+$query_semua_item = "SELECT p.*, pk.nama as nama_paket, pk.harga as harga_paket, pk.icon 
                     FROM pesanan p 
                     JOIN paket pk ON p.id_paket = pk.id 
                     WHERE p.tracking_code = ?
@@ -158,7 +157,7 @@ while ($item = $result_semua_item->fetch_assoc()) {
 }
 
 // Get all packages for edit form
-$query_paket = "SELECT id, nama, harga FROM paket ORDER BY nama";
+$query_paket = "SELECT id, nama, harga, icon FROM paket ORDER BY nama";
 $result_paket = $conn->query($query_paket);
 $paket_options = [];
 while ($paket = $result_paket->fetch_assoc()) {
@@ -433,6 +432,52 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
             font-weight: 500;
         }
         
+        /* Package icon styling */
+        .paket-item-title img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 10px;
+            background-color: white;
+            padding: 6px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .paket-item-title img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .paket-item-title .package-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        /* Package select styling */
+        .package-select {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+        }
+        
+        .selected-package-preview {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        
+        .package-preview-icon {
+            border-radius: 4px;
+            background-color: white;
+            padding: 2px;
+        }
+        
+        .package-preview-name {
+            font-weight: 500;
+            color: #495057;
+        }
+        
         .total-section {
             background-color: #f8f9fa;
             border-radius: 10px;
@@ -502,28 +547,88 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
         /* Edit Form */
         .edit-form {
             display: none;
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 10px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
         
         .edit-form.show {
             display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .edit-form .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .edit-form .form-group label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 8px;
+            display: block;
         }
         
         .edit-form .form-control {
-            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            padding: 10px 12px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .edit-form .form-control:focus {
+            border-color: #42c3cf;
+            box-shadow: 0 0 0 0.2rem rgba(66, 195, 207, 0.25);
         }
         
         .edit-form .btn-group {
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            margin-top: 20px;
         }
         
         .edit-form .btn-group .btn {
             flex: 1;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .edit-form .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        
+        .edit-form .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            transform: translateY(-1px);
+        }
+        
+        .edit-form .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        
+        .edit-form .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+            transform: translateY(-1px);
         }
         
         /* Styling untuk form status pesanan dan pembayaran */
@@ -762,6 +867,22 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
                 flex-direction: column;
             }
             
+            .paket-item-title {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 8px !important;
+            }
+            
+            .paket-item-title img,
+            .paket-item-title div {
+                width: 50px !important;
+                height: 50px !important;
+            }
+            
+            .paket-item-title .package-name {
+                font-size: 14px;
+            }
+            
             .paket-item-id {
                 margin-top: 5px;
                 font-size: 12px;
@@ -917,24 +1038,21 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
                             <?php foreach ($items_pesanan as $item): ?>
                                 <div class="paket-item">
                                     <div class="paket-item-header">
-                                        <div class="paket-item-title d-flex align-items-center gap-2">
+                                        <div class="paket-item-title d-flex align-items-center gap-3">
                                             <?php if (!empty($item['icon'])): ?>
-                                                <img src="../assets/uploads/paket_icons/<?php echo htmlspecialchars($item['icon']); ?>" alt="<?php echo htmlspecialchars($item['nama_paket']); ?>" style="width:32px;height:32px;object-fit:contain;vertical-align:middle;">
+                                                <img src="../assets/uploads/paket_icons/<?php echo htmlspecialchars($item['icon']); ?>" alt="<?php echo htmlspecialchars($item['nama_paket']); ?>" title="<?php echo htmlspecialchars($item['nama_paket']); ?>">
+                                            <?php else: ?>
+                                                <div style="width: 60px; height: 60px; background-color: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #6c757d;">
+                                                    <i class="fas fa-box" style="font-size: 20px;"></i>
+                                                </div>
                                             <?php endif; ?>
-                                            <span><?php echo $item['nama_paket']; ?></span>
+                                            <span class="package-name"><?php echo $item['nama_paket']; ?></span>
                                         </div>
                                         <div class="paket-item-id">ID: #<?php echo $item['id']; ?></div>
                                     </div>
                                     <div class="paket-item-details">
                                         <span class="paket-item-label">Harga per Kg:</span>
-                                        <span class="paket-item-value">Rp <?php 
-                                            // Jika paket khusus dan harga_custom ada, gunakan harga_custom
-                                            if ($item['nama_paket'] === 'Paket Khusus' && isset($item['harga_custom']) && $item['harga_custom'] > 0) {
-                                                echo number_format($item['harga_custom'], 0, ',', '.');
-                                            } else {
-                                                echo number_format($item['harga_paket'], 0, ',', '.');
-                                            }
-                                        ?></span>
+                                        <span class="paket-item-value">Rp <?php echo number_format($item['harga_paket'], 0, ',', '.'); ?></span>
                                     </div>
                                     <div class="paket-item-details">
                                         <span class="paket-item-label">Berat:</span>
@@ -949,31 +1067,32 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
                                         <form method="POST">
                                             <input type="hidden" name="order_id" value="<?php echo $item['id']; ?>">
                                             <div class="form-group">
-                                                <label>Paket:</label>
-                                                <select name="paket_id" class="form-control" required>
+                                                <label><i class="fas fa-box"></i> Pilih Paket:</label>
+                                                <select name="paket_id" class="form-control package-select" required>
                                                     <?php foreach ($paket_options as $paket): ?>
                                                         <option value="<?php echo $paket['id']; ?>" 
                                                                 data-harga="<?php echo $paket['harga']; ?>"
+                                                                data-icon="<?php echo htmlspecialchars($paket['icon'] ?? ''); ?>"
                                                                 <?php echo $paket['id'] == $item['id_paket'] ? 'selected' : ''; ?>>
                                                             <?php echo $paket['nama']; ?> - Rp <?php echo number_format($paket['harga'], 0, ',', '.'); ?>/kg
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>
+                                                <div class="selected-package-preview mt-2" style="display: none;">
+                                                    <div class="d-flex align-items-center gap-3 p-3 bg-light rounded">
+                                                        <img src="" alt="" class="package-preview-icon" style="width: 40px; height: 40px; object-fit: contain; border-radius: 6px; background: white; padding: 3px;">
+                                                        <span class="package-preview-name fw-bold"></span>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="form-group">
-                                                <label>Berat (kg):</label>
+                                                <label><i class="fas fa-weight-hanging"></i> Berat (kg):</label>
                                                 <input type="number" name="berat" class="form-control" step="0.01" min="0.01" 
                                                        value="<?php echo $item['berat']; ?>" required>
                                             </div>
-                                            <div class="form-group">
-                                                <label>Harga Custom (opsional, kosongkan untuk menggunakan harga paket):</label>
-                                                <input type="number" name="harga_custom" class="form-control" step="0.01" min="0" 
-                                                       value="<?php echo $item['harga_custom'] ?? ''; ?>" 
-                                                       placeholder="Masukkan harga custom per kg">
-                                            </div>
                                             <div class="btn-group">
                                                 <button type="submit" name="edit_order" class="btn btn-success">
-                                                    <i class="fas fa-save"></i> Simpan
+                                                    <i class="fas fa-save"></i> Simpan Perubahan
                                                 </button>
                                                 <button type="button" class="btn btn-secondary" onclick="toggleEditForm(<?php echo $item['id']; ?>)">
                                                     <i class="fas fa-times"></i> Batal
@@ -1179,13 +1298,7 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
                     <?php foreach ($items_pesanan as $item): ?>
                     itemDetails += `• Paket: <?php echo $item['nama_paket']; ?>\n`;
                     itemDetails += `• Berat: <?php echo number_format($item['berat'], 2, ',', '.'); ?> kg\n`;
-                    itemDetails += `• Harga per kg: Rp <?php
-                        if ($item['nama_paket'] === 'Paket Khusus' && isset($item['harga_custom']) && $item['harga_custom'] > 0) {
-                            echo number_format($item['harga_custom'], 0, ',', '.');
-                        } else {
-                            echo number_format($item['harga_paket'], 0, ',', '.');
-                        }
-                    ?>\n`;
+                    itemDetails += `• Harga per kg: Rp <?php echo number_format($item['harga_paket'], 0, ',', '.'); ?>\n`;
                     itemDetails += `• Subtotal: Rp <?php echo number_format($item['harga'], 0, ',', '.'); ?>\n\n`;
                     <?php endforeach; ?>
                     message += `*DETAIL PAKET:*\n${itemDetails}`;
@@ -1212,13 +1325,7 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
                     <?php foreach ($items_pesanan as $item): ?>
                     itemDetails += `• Paket: <?php echo $item['nama_paket']; ?>\n`;
                     itemDetails += `• Berat: <?php echo number_format($item['berat'], 2, ',', '.'); ?> kg\n`;
-                    itemDetails += `• Harga per kg: Rp <?php
-                        if ($item['nama_paket'] === 'Paket Khusus' && isset($item['harga_custom']) && $item['harga_custom'] > 0) {
-                            echo number_format($item['harga_custom'], 0, ',', '.');
-                        } else {
-                            echo number_format($item['harga_paket'], 0, ',', '.');
-                        }
-                    ?>\n`;
+                    itemDetails += `• Harga per kg: Rp <?php echo number_format($item['harga_paket'], 0, ',', '.'); ?>\n`;
                     itemDetails += `• Subtotal: Rp <?php echo number_format($item['harga'], 0, ',', '.'); ?>\n\n`;
                     <?php endforeach; ?>
                     message += `*PAKET YANG SUDAH SELESAI:*\n${itemDetails}`;
@@ -1364,6 +1471,31 @@ $harga_formatted = number_format($total_harga_semua, 0, ',', '.');
             animateCSSLink.rel = 'stylesheet';
             animateCSSLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css';
             document.head.appendChild(animateCSSLink);
+            
+            // Handle package selection preview
+            $(document).on('change', '.package-select', function() {
+                const selectedOption = $(this).find('option:selected');
+                const icon = selectedOption.data('icon');
+                const packageName = selectedOption.text().split(' - ')[0]; // Get package name without price
+                const previewContainer = $(this).siblings('.selected-package-preview');
+                const previewIcon = previewContainer.find('.package-preview-icon');
+                const previewName = previewContainer.find('.package-preview-name');
+                
+                if (icon) {
+                    previewIcon.attr('src', '../assets/uploads/paket_icons/' + icon);
+                    previewIcon.show();
+                } else {
+                    previewIcon.hide();
+                }
+                
+                previewName.text(packageName);
+                previewContainer.show();
+            });
+            
+            // Initialize package preview for existing selections
+            $('.package-select').each(function() {
+                $(this).trigger('change');
+            });
         });
     </script>
 </body>

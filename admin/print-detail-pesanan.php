@@ -31,7 +31,7 @@ if ($result_pesanan_utama->num_rows === 0) {
 $pesanan_utama = $result_pesanan_utama->fetch_assoc();
 
 // Query semua item pesanan
-$query_semua_item = "SELECT p.*, pk.nama as nama_paket, pk.harga as harga_paket 
+$query_semua_item = "SELECT p.*, pk.nama as nama_paket, pk.harga as harga_paket, pk.icon 
                     FROM pesanan p 
                     JOIN paket pk ON p.id_paket = pk.id 
                     WHERE p.tracking_code = ?
@@ -105,6 +105,7 @@ $logo = '../assets/images/zeea_laundry.png';
         .paket-table th { background: #f2f2f2; font-weight: bold; }
         .paket-table td { text-align: center; }
         .paket-table td.left { text-align: left; }
+        .paket-icon { width: 20px; height: 20px; object-fit: contain; vertical-align: middle; }
         .total-row { font-weight: bold; font-size: 15px; background: #e8f4f8; }
         .status-row { font-size: 13px; }
         .footer { text-align: center; margin-top: 18px; font-size: 12px; color: #555; }
@@ -138,6 +139,7 @@ $logo = '../assets/images/zeea_laundry.png';
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>Icon</th>
                         <th class="left">Nama Paket</th>
                         <th>Berat (kg)</th>
                         <th>Harga/Kg</th>
@@ -148,6 +150,13 @@ $logo = '../assets/images/zeea_laundry.png';
                     <?php $no=1; foreach ($items_pesanan as $item): ?>
                     <tr>
                         <td><?php echo $no++; ?></td>
+                        <td>
+                            <?php if (!empty($item['icon'])): ?>
+                                <img src="../assets/uploads/paket_icons/<?php echo htmlspecialchars($item['icon']); ?>" alt="<?php echo htmlspecialchars($item['nama_paket']); ?>" class="paket-icon">
+                            <?php else: ?>
+                                <span style="color: #ccc;">-</span>
+                            <?php endif; ?>
+                        </td>
                         <td class="left"><?php echo $item['nama_paket']; ?></td>
                         <td><?php echo number_format($item['berat'], 2, ',', '.'); ?></td>
                         <td>Rp <?php echo number_format(($item['nama_paket'] === 'Paket Khusus' && isset($item['harga_custom']) && $item['harga_custom'] > 0) ? $item['harga_custom'] : $item['harga_paket'], 0, ',', '.'); ?></td>
@@ -157,7 +166,7 @@ $logo = '../assets/images/zeea_laundry.png';
                 </tbody>
                 <tfoot>
                     <tr class="total-row">
-                        <td colspan="4" style="text-align:right;">Total</td>
+                        <td colspan="5" style="text-align:right;">Total</td>
                         <td>Rp <?php echo number_format($total_harga_semua, 0, ',', '.'); ?></td>
                     </tr>
                 </tfoot>
