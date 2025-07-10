@@ -10,6 +10,7 @@ date_default_timezone_set('Asia/Jakarta');
 
 $current_page = basename($_SERVER['PHP_SELF']);
 include '../includes/db.php';
+$current_page = 'pesanan.php';
 
 // Ambil data admin dari sesi
 $adminUsername = $_SESSION['username'];
@@ -261,7 +262,7 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Pesanan - Admin Zeea Laundry</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/admin/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.css">
     <link rel="icon" type="image/png" href="../assets/images/zeea_laundry.png">
@@ -948,7 +949,7 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
             <div class="current-date">
                 <i class="far fa-calendar-alt"></i> <?php echo $tanggal_sekarang; ?>
             </div>
-            <h1 class="mb-4">Tambah Pesanan Baru</h1>
+            <h1 class="mb-4">Buat Pesanan Baru</h1>
                 <div class="step-indicator-container">
                     <div class="step-indicator">
                         <div class="step active" id="step-1">1</div>
@@ -1187,7 +1188,7 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
                 if (input.length >= 2) {
                     // Make AJAX request to search for customers
                     $.ajax({
-                        url: 'tambah-pesanan.php',
+                        url: 'buat-pesanan.php',
                         type: 'GET',
                         data: { search_customer: input },
                         dataType: 'json',
@@ -1464,7 +1465,7 @@ $tanggal_sekarang = formatTanggalIndonesia(date('Y-m-d H:i:s'));
                     
                     $.ajax({
                         type: 'POST',
-                        url: 'tambah-pesanan.php',
+                        url: 'buat-pesanan.php',
                         data: formData,
                         dataType: 'json',
                         headers: {

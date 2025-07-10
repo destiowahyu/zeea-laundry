@@ -58,6 +58,16 @@ $status_filter = isset($_GET['status']) ? $_GET['status'] : '';
 $pembayaran_filter = isset($_GET['pembayaran']) ? $_GET['pembayaran'] : '';
 $search = isset($_GET['search']) ? htmlspecialchars($_GET['search'], ENT_QUOTES) : '';
 
+// Ambil filter tanggal dari request
+$filter_tanggal = '';
+if ($periode_filter === 'hari_ini') {
+    $filter_tanggal = date('Y-m-d');
+} elseif ($periode_filter === 'custom' && !empty($tanggal_dari) && !empty($tanggal_sampai)) {
+    $filter_tanggal = [$tanggal_dari, $tanggal_sampai];
+} elseif ($periode_filter === 'bulan_ini') {
+    $filter_tanggal = date('Y-m');
+}
+
 // Tentukan rentang tanggal berdasarkan periode
 $where_condition = "WHERE 1=1";
 $periode_text = "";
@@ -120,12 +130,13 @@ $stats_query = "SELECT
     SUM(CASE WHEN p.status_pembayaran = 'sudah_dibayar' THEN p.harga ELSE 0 END) as nilai_sudah_dibayar
 FROM pesanan p 
 JOIN pelanggan pl ON p.id_pelanggan = pl.id 
-$where_condition";
+$where_condition AND p.deleted_at IS NULL";
 
 $stats_result = $conn->query($stats_query);
 $stats = $stats_result->fetch_assoc();
 
-// Query untuk data transaksi
+// --- PERBAIKAN FILTER TANGGAL ---
+// Query pesanan laundry (seperti sebelumnya, tambahkan sumber)
 $transaksi_query = "SELECT 
     p.id,
     p.tracking_code,
@@ -136,18 +147,106 @@ $transaksi_query = "SELECT
     pl.nama as nama_pelanggan,
     pl.no_hp,
     GROUP_CONCAT(pk.nama SEPARATOR ', ') as paket_list,
-    -- PERBAIKAN: Gunakan MAX() pada kolom non-agregat dari LEFT JOIN
     MAX(COALESCE(aj.harga, 5000)) as harga_antar_jemput,
-    MAX(aj.layanan) as layanan_antar_jemput
+    MAX(aj.layanan) as layanan_antar_jemput,
+    'laundry' as sumber
 FROM pesanan p 
 JOIN pelanggan pl ON p.id_pelanggan = pl.id 
 JOIN paket pk ON p.id_paket = pk.id 
 LEFT JOIN antar_jemput aj ON p.id = aj.id_pesanan
-WHERE aj.deleted_at IS NULL AND 1=1 " . str_replace("WHERE 1=1", "", $where_condition) . "
-GROUP BY p.id, p.tracking_code, p.harga, p.status, p.status_pembayaran, p.waktu, pl.nama, pl.no_hp
+WHERE p.deleted_at IS NULL AND p.status_pembayaran = 'sudah_dibayar' ";
+if ($periode_filter === 'hari_ini') {
+    $transaksi_query .= " AND DATE(p.waktu) = CURDATE() ";
+} elseif ($periode_filter === '7_hari') {
+    $transaksi_query .= " AND DATE(p.waktu) BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND CURDATE() ";
+} elseif ($periode_filter === '30_hari') {
+    $transaksi_query .= " AND DATE(p.waktu) BETWEEN DATE_SUB(CURDATE(), INTERVAL 29 DAY) AND CURDATE() ";
+} elseif ($periode_filter === 'bulan_ini') {
+    $transaksi_query .= " AND MONTH(p.waktu) = MONTH(CURDATE()) AND YEAR(p.waktu) = YEAR(CURDATE()) ";
+} elseif ($periode_filter === 'custom' && !empty($tanggal_dari) && !empty($tanggal_sampai)) {
+    $transaksi_query .= " AND DATE(p.waktu) BETWEEN '$tanggal_dari' AND '$tanggal_sampai' ";
+}
+$transaksi_query .= " GROUP BY p.id, p.tracking_code, p.harga, p.status, p.status_pembayaran, p.waktu, pl.nama, pl.no_hp
 ORDER BY p.waktu DESC";
 
+// Query antar_jemput selesai & sudah dibayar, gunakan selesai_at jika ada
+$antar_query = "SELECT 
+    aj.id,
+    CONCAT('AJ-', LPAD(aj.id, 6, '0')) as tracking_code,
+    aj.harga as harga,
+    aj.status,
+    aj.status_pembayaran,
+    COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput)) as waktu,
+    COALESCE(pl.nama, aj.nama_pelanggan, 'Pelanggan') as nama_pelanggan,
+    COALESCE(pl.no_hp, '') as no_hp,
+    '-' as paket_list,
+    aj.harga as harga_antar_jemput,
+    aj.layanan as layanan_antar_jemput,
+    'antar_jemput' as sumber
+FROM antar_jemput aj
+LEFT JOIN pelanggan pl ON aj.id_pelanggan = pl.id
+WHERE aj.status = 'selesai' AND aj.status_pembayaran = 'sudah_dibayar' AND aj.deleted_at IS NULL AND aj.id_pesanan IS NULL";
+if ($periode_filter === 'hari_ini') {
+    $antar_query .= " AND DATE(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) = CURDATE() ";
+} elseif ($periode_filter === '7_hari') {
+    $antar_query .= " AND DATE(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND CURDATE() ";
+} elseif ($periode_filter === '30_hari') {
+    $antar_query .= " AND DATE(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) BETWEEN DATE_SUB(CURDATE(), INTERVAL 29 DAY) AND CURDATE() ";
+} elseif ($periode_filter === 'bulan_ini') {
+    $antar_query .= " AND MONTH(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) = MONTH(CURDATE()) AND YEAR(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) = YEAR(CURDATE()) ";
+} elseif ($periode_filter === 'custom' && !empty($tanggal_dari) && !empty($tanggal_sampai)) {
+    $antar_query .= " AND DATE(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) BETWEEN '$tanggal_dari' AND '$tanggal_sampai' ";
+}
+
+// Gabungkan hasil query
 $transaksi_result = $conn->query($transaksi_query);
+$antar_result = $conn->query($antar_query);
+
+$all_transaksi = [];
+if ($transaksi_result) {
+    while ($row = $transaksi_result->fetch_assoc()) {
+        $all_transaksi[] = $row;
+    }
+}
+if ($antar_result) {
+    while ($row = $antar_result->fetch_assoc()) {
+        $all_transaksi[] = $row;
+    }
+}
+// Urutkan semua transaksi berdasarkan waktu DESC
+usort($all_transaksi, function($a, $b) {
+    return strtotime($b['waktu']) - strtotime($a['waktu']);
+});
+
+// --- INISIALISASI VARIABEL STATISTIK (agar tidak undefined) ---
+$stat_total_transaksi = 0;
+$stat_total_nilai = 0;
+$stat_status_diproses = 0;
+$stat_status_selesai = 0;
+$stat_sudah_dibayar = 0;
+$stat_belum_dibayar = 0;
+// --- PERBAIKAN STATISTIK: Hitung dari $all_transaksi (laundry + antar jemput) ---
+$stat_total_transaksi = count($all_transaksi);
+$stat_total_nilai = 0;
+$stat_status_diproses = 0;
+$stat_status_selesai = 0;
+$stat_sudah_dibayar = 0;
+$stat_belum_dibayar = 0;
+foreach ($all_transaksi as $row) {
+    $stat_total_nilai += (int)($row['harga'] ?? 0);
+    if (isset($row['status']) && (strtolower($row['status']) === 'diproses' || strtolower($row['status']) === 'proses' || strtolower($row['status']) === 'sedang diproses')) {
+        $stat_status_diproses++;
+    }
+    if (isset($row['status']) && (strtolower($row['status']) === 'selesai' || strtolower($row['status']) === 'completed')) {
+        $stat_status_selesai++;
+    }
+    if (isset($row['status_pembayaran']) && (strtolower($row['status_pembayaran']) === 'sudah_dibayar' || strtolower($row['status_pembayaran']) === 'paid')) {
+        $stat_sudah_dibayar++;
+    }
+    if (isset($row['status_pembayaran']) && (strtolower($row['status_pembayaran']) === 'belum_dibayar' || strtolower($row['status_pembayaran']) === 'unpaid')) {
+        $stat_belum_dibayar++;
+    }
+}
 
 // Fungsi format tanggal
 function formatTanggalSingkat($tanggal) {
@@ -156,6 +255,7 @@ function formatTanggalSingkat($tanggal) {
 
 // Fungsi format rupiah
 function formatRupiah($angka) {
+    $angka = $angka ?? 0;
     return "Rp " . number_format($angka, 0, ',', '.');
 }
 
@@ -628,7 +728,7 @@ function getPembayaranBadge($status) {
         <div class="stat-icon primary">
             <i class="fas fa-receipt"></i>
         </div>
-        <div class="stat-number"><?php echo $stats['total_transaksi'] ?? 0; ?></div>
+        <div class="stat-number"><?php echo $stat_total_transaksi; ?></div>
         <div class="stat-label">Total Transaksi</div>
     </div>
     
@@ -636,7 +736,7 @@ function getPembayaranBadge($status) {
         <div class="stat-icon success">
             <i class="fas fa-money-bill-wave"></i>
         </div>
-        <div class="stat-number"><?php echo formatRupiah($stats['nilai_sudah_dibayar'] ?? 0); ?></div>
+        <div class="stat-number"><?php echo formatRupiah($stat_total_nilai); ?></div>
         <div class="stat-label">Sudah Dibayar</div>
     </div>
     
@@ -644,7 +744,7 @@ function getPembayaranBadge($status) {
         <div class="stat-icon info">
             <i class="fas fa-cog"></i>
         </div>
-        <div class="stat-number"><?php echo $stats['status_diproses'] ?? 0; ?></div>
+        <div class="stat-number"><?php echo $stat_status_diproses; ?></div>
         <div class="stat-label">Diproses</div>
     </div>
     
@@ -652,7 +752,7 @@ function getPembayaranBadge($status) {
         <div class="stat-icon success">
             <i class="fas fa-check-circle"></i>
         </div>
-        <div class="stat-number"><?php echo $stats['status_selesai'] ?? 0; ?></div>
+        <div class="stat-number"><?php echo $stat_status_selesai; ?></div>
         <div class="stat-label">Selesai</div>
     </div>
 </div>
@@ -767,12 +867,12 @@ function getPembayaranBadge($status) {
                 <div class="table-title">
                     <span><i class="fas fa-table"></i>Detail Transaksi</span>
                     <div class="text-muted">
-                        Total: <?php echo $stats['total_transaksi']; ?> transaksi | 
-                        Nilai: <?php echo formatRupiah($stats['total_nilai'] ?? 0); ?>
+                        Total: <?php echo $stat_total_transaksi; ?> transaksi | 
+                        Nilai: <?php echo formatRupiah($stat_total_nilai); ?>
                     </div>
                 </div>
 
-                <?php if ($transaksi_result->num_rows > 0): ?>
+                <?php if (count($all_transaksi) > 0): ?>
                     <!-- Desktop Table -->
                     <div class="desktop-table">
                         <div class="table-responsive">
@@ -791,20 +891,16 @@ function getPembayaranBadge($status) {
                                 </thead>
                                 <tbody>
                                     <?php 
-                                    $transaksi_result->data_seek(0);
                                     $no = 1;
-                                    while ($row = $transaksi_result->fetch_assoc()): 
+                                    foreach ($all_transaksi as $row): 
                                         $total_harga = $row['harga'];
-                                        if (!empty($row['layanan_antar_jemput'])) {
-                                            if ($row['status_pembayaran'] === 'belum_dibayar') {
-                                                $total_harga += $row['harga_antar_jemput'];
-                                            }
-                                        }
+                                        $is_antar = ($row['sumber'] === 'antar_jemput');
                                     ?>
                                         <tr>
                                             <td><?php echo $no++; ?></td>
                                             <td>
                                                 <span class="tracking-id"><?php echo $row['tracking_code']; ?></span>
+                                                <?php if ($is_antar): ?><br><small class="text-info">Antar/Jemput</small><?php endif; ?>
                                             </td>
                                             <td>
                                                 <div class="customer-info"><?php echo htmlspecialchars($row['nama_pelanggan']); ?></div>
@@ -818,18 +914,12 @@ function getPembayaranBadge($status) {
                                             </td>
                                             <td>
                                                 <div class="price-amount"><?php echo formatRupiah($total_harga); ?></div>
-                                                <?php if (!empty($row['layanan_antar_jemput']) && $row['status_pembayaran'] === 'belum_dibayar'): ?>
-                                                    <small class="text-muted">
-                                                        Pesanan: <?php echo formatRupiah($row['harga']); ?><br>
-                                                        <?php echo ucfirst($row['layanan_antar_jemput']); ?>: <?php echo formatRupiah($row['harga_antar_jemput']); ?>
-                                                    </small>
-                                                <?php endif; ?>
                                             </td>
                                             <td><?php echo getStatusBadge($row['status']); ?></td>
                                             <td><?php echo getPembayaranBadge($row['status_pembayaran']); ?></td>
                                             <td><?php echo formatTanggalSingkat($row['waktu']); ?></td>
                                         </tr>
-                                    <?php endwhile; ?>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -838,15 +928,10 @@ function getPembayaranBadge($status) {
                     <!-- Mobile Cards -->
                     <div class="mobile-cards">
                         <?php 
-                        $transaksi_result->data_seek(0);
                         $no = 1;
-                        while ($row = $transaksi_result->fetch_assoc()): 
+                        foreach ($all_transaksi as $row): 
                             $total_harga = $row['harga'];
-                            if (!empty($row['layanan_antar_jemput'])) {
-                                if ($row['status_pembayaran'] === 'belum_dibayar') {
-                                    $total_harga += $row['harga_antar_jemput'];
-                                }
-                            }
+                            $is_antar = ($row['sumber'] === 'antar_jemput');
                         ?>
                             <div class="transaction-card">
                                 <div class="transaction-card-header">
@@ -859,6 +944,7 @@ function getPembayaranBadge($status) {
                                         <div class="transaction-label">Tracking:</div>
                                         <div class="transaction-value">
                                             <span class="tracking-id"><?php echo $row['tracking_code']; ?></span>
+                                            <?php if ($is_antar): ?><br><small class="text-info">Antar/Jemput</small><?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="transaction-item">
@@ -881,12 +967,6 @@ function getPembayaranBadge($status) {
                                         <div class="transaction-label">Harga:</div>
                                         <div class="transaction-value">
                                             <div class="price-amount"><?php echo formatRupiah($total_harga); ?></div>
-                                            <?php if (!empty($row['layanan_antar_jemput']) && $row['status_pembayaran'] === 'belum_dibayar'): ?>
-                                                <small class="text-muted">
-                                                    Pesanan: <?php echo formatRupiah($row['harga']); ?><br>
-                                                    <?php echo ucfirst($row['layanan_antar_jemput']); ?>: <?php echo formatRupiah($row['harga_antar_jemput']); ?>
-                                                </small>
-                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="transaction-item">
@@ -899,7 +979,7 @@ function getPembayaranBadge($status) {
                                     </div>
                                 </div>
                             </div>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     </div>
                 <?php else: ?>
                     <div class="no-data">

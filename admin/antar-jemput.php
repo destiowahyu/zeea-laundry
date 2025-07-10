@@ -64,6 +64,9 @@ if ($result_table->num_rows == 0) {
     $conn->query("INSERT INTO antarjemput_status (status, updated_by) VALUES ('active', 'system')");
 }
 
+// AUTO-FIX: Setiap reload halaman, pastikan semua antar_jemput yang statusnya 'selesai' status_pembayaran-nya juga 'sudah_dibayar'
+$conn->query("UPDATE antar_jemput SET status_pembayaran = 'sudah_dibayar' WHERE status = 'selesai' AND status_pembayaran != 'sudah_dibayar'");
+
 // FUNGSI UNTUK MENGIRIM PESAN WHATSAPP - DIPERBAIKI
 function sendWhatsAppMessage($no_hp, $message) {
     // Pastikan direktori logs ada
@@ -448,7 +451,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_status_update'])
         
         try {
             // Update status antar jemput
-            $stmt = $conn->prepare("UPDATE antar_jemput SET status = ? WHERE id = ?");
+            if ($next_status === 'selesai') {
+                $stmt = $conn->prepare("UPDATE antar_jemput SET status = ?, selesai_at = NOW() WHERE id = ?");
+            } else {
+                $stmt = $conn->prepare("UPDATE antar_jemput SET status = ? WHERE id = ?");
+            }
             $stmt->bind_param("si", $next_status, $antar_jemput_id);
             
             if (!$stmt->execute()) {
@@ -533,7 +540,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     
     try {
         // Update status antar jemput
-        $stmt = $conn->prepare("UPDATE antar_jemput SET status = ? WHERE id = ?");
+        if ($status_baru === 'selesai') {
+            $stmt = $conn->prepare("UPDATE antar_jemput SET status = ?, selesai_at = NOW() WHERE id = ?");
+        } else {
+            $stmt = $conn->prepare("UPDATE antar_jemput SET status = ? WHERE id = ?");
+        }
         $stmt->bind_param("si", $status_baru, $antar_jemput_id);
         
         if (!$stmt->execute()) {
@@ -593,21 +604,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
 // Handle update harga
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_harga'])) {
     $antar_jemput_id = $_POST['antar_jemput_id'];
-    $harga_custom = $_POST['harga_custom'];
-    
+    $harga = $_POST['harga_custom']; // ambil dari input, tetap pakai name='harga_custom' di form
     // Cek status terlebih dahulu
     $check_status = $conn->prepare("SELECT status FROM antar_jemput WHERE id = ?");
     $check_status->bind_param("i", $antar_jemput_id);
     $check_status->execute();
     $status_result = $check_status->get_result();
     $status_data = $status_result->fetch_assoc();
-    
     if ($status_data['status'] === 'selesai') {
         $error_message = "Tidak dapat mengubah harga karena status antar jemput sudah selesai!";
     } else {
-        $stmt = $conn->prepare("UPDATE antar_jemput SET harga_custom = ? WHERE id = ?");
-        $stmt->bind_param("di", $harga_custom, $antar_jemput_id);
-        
+        $stmt = $conn->prepare("UPDATE antar_jemput SET harga = ? WHERE id = ?");
+        $stmt->bind_param("di", $harga, $antar_jemput_id);
         if ($stmt->execute()) {
             $success_message = "Harga antar jemput berhasil diperbarui!";
         } else {
@@ -670,8 +678,9 @@ $query = "SELECT
             aj.harga,
             aj.nama_pelanggan,
             aj.deleted_at,
+            aj.status_pembayaran, -- ambil langsung dari antar_jemput
             COALESCE(p.tracking_code, CONCAT('AJ-', LPAD(aj.id, 6, '0'))) as tracking_code,
-            COALESCE(p.status_pembayaran, 'sudah_dibayar') as status_pembayaran,
+            COALESCE(p.status_pembayaran, 'sudah_dibayar') as status_pembayaran_pesanan, -- hanya untuk referensi, JANGAN dipakai di dropdown
             COALESCE(
                 (SELECT SUM(p2.harga) FROM pesanan p2 WHERE p2.tracking_code = p.tracking_code), 
                 0
@@ -907,7 +916,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status_ajax'])
         echo json_encode(['success'=>false,'message'=>'Status tidak valid']);
         exit();
     }
-    $stmt = $conn->prepare("UPDATE antar_jemput SET status = ? WHERE id = ?");
+    if ($status_baru === 'selesai') {
+        $stmt = $conn->prepare("UPDATE antar_jemput SET status = ?, selesai_at = NOW() WHERE id = ?");
+    } else {
+        $stmt = $conn->prepare("UPDATE antar_jemput SET status = ? WHERE id = ?");
+    }
     $stmt->bind_param("si", $status_baru, $antar_jemput_id);
     if ($stmt->execute()) {
         echo json_encode(['success'=>true,'message'=>'Status berhasil diperbarui']);
@@ -929,6 +942,34 @@ if (isset($_GET['get_status_badge']) && $_GET['get_status_badge'] == '1' && isse
     $tracking_code = $row['id_pesanan'] ? $conn->query("SELECT tracking_code FROM pesanan WHERE id = {$row['id_pesanan']}")->fetch_assoc()['tracking_code'] : '';
     require_once __DIR__ . '/../admin/antar-jemput.php'; // pastikan fungsi getStatusBadgeWithClearProgress tersedia
     echo getStatusBadgeWithClearProgress($row['status'], $antar_id, $is_deleted, $no_hp, $nama_pelanggan, $tracking_code);
+    exit();
+}
+
+// 1. PHP HANDLER: Update status pembayaran antar-jemput (dan pesanan jika ada)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_payment_status'])) {
+    header('Content-Type: application/json');
+    $antar_jemput_id = intval($_POST['antar_jemput_id']);
+    $status_pembayaran = $_POST['status_pembayaran'];
+    $tracking_code = $_POST['tracking_code'] ?? null;
+    $success = false;
+    $msg = '';
+    
+    // Update antar_jemput
+    $stmt = $conn->prepare("UPDATE antar_jemput SET status_pembayaran = ? WHERE id = ?");
+    $stmt->bind_param("si", $status_pembayaran, $antar_jemput_id);
+    if ($stmt->execute()) {
+        $success = true;
+        $msg = 'Status pembayaran antar jemput berhasil diupdate';
+        // Jika ada tracking_code, update juga semua pesanan terkait
+        if ($tracking_code) {
+            $stmt2 = $conn->prepare("UPDATE pesanan SET status_pembayaran = ? WHERE tracking_code = ?");
+            $stmt2->bind_param("ss", $status_pembayaran, $tracking_code);
+            $stmt2->execute();
+        }
+    } else {
+        $msg = 'Gagal update status pembayaran antar jemput';
+    }
+    echo json_encode(['success'=>$success,'message'=>$msg]);
     exit();
 }
 ?>
@@ -1948,6 +1989,36 @@ if (isset($_GET['get_status_badge']) && $_GET['get_status_badge'] == '1' && isse
         .table tr.table-danger:hover {
             background-color: rgba(220, 53, 69, 0.1);
         }
+        .stat-card.active {
+            box-shadow: 0 0 0 3px #42c3cf44, 0 8px 25px rgba(0,0,0,0.15);
+            border: 2px solid #42c3cf;
+            z-index: 2;
+        }
+        .stat-card.active .stat-icon {
+            filter: brightness(1.1) drop-shadow(0 0 6px #42c3cf66);
+        }
+        .status-dropdown.payment-status-select {
+            border: 2px solid #ffc107;
+            background: #fffbe6;
+            color: #b8860b;
+            transition: all 0.2s;
+            font-size: 0.8rem !important;
+            padding: 2px 6px !important;
+            font-weight: 500;
+        }
+        .status-dropdown.payment-sudah_dibayar {
+            border: 2px solid #28a745 !important;
+            background: #eafaf1 !important;
+            color: #218838 !important;
+        }
+        .status-dropdown.payment-belum_dibayar {
+            border: 2px solid #fd7e14 !important;
+            background: #fff5eb !important;
+            color: #d35400 !important;
+        }
+        .status-dropdown.payment-status-select:focus {
+            box-shadow: 0 0 0 2px #42c3cf44;
+        }
     </style>
 </head>
 <body>
@@ -2013,46 +2084,42 @@ if (isset($_GET['get_status_badge']) && $_GET['get_status_badge'] == '1' && isse
 
             <!-- Statistics Dashboard -->
             <div class="stats-dashboard">
-                <div class="stat-card primary">
+                <a href="?status=&show_deleted=0" style="text-decoration:none;" class="stat-card primary<?php echo ($status_filter == '' && !$show_deleted) ? ' active' : ''; ?>">
                     <div class="stat-icon primary">
                         <i class="fas fa-list"></i>
                     </div>
                     <div class="stat-number"><?php echo $stats['total']; ?></div>
-                    <div class="stat-label">Total</div>
-                </div>
-                
-                <div class="stat-card warning">
+                    <div class="stat-label">Semua Pesanan</div>
+                </a>
+                <a href="?status=<?php echo ($status_filter == 'menunggu' && !$show_deleted) ? '' : 'menunggu'; ?>&show_deleted=0" style="text-decoration:none;" class="stat-card warning<?php echo ($status_filter == 'menunggu' && !$show_deleted) ? ' active' : ''; ?>">
                     <div class="stat-icon warning">
                         <i class="fas fa-clock"></i>
                     </div>
                     <div class="stat-number"><?php echo $stats['menunggu']; ?></div>
                     <div class="stat-label">Menunggu</div>
-                </div>
-                
-                <div class="stat-card info">
+                </a>
+                <a href="?status=<?php echo ($status_filter == 'dalam perjalanan' && !$show_deleted) ? '' : 'dalam perjalanan'; ?>&show_deleted=0" style="text-decoration:none;" class="stat-card info<?php echo ($status_filter == 'dalam perjalanan' && !$show_deleted) ? ' active' : ''; ?>">
                     <div class="stat-icon info">
                         <i class="fas fa-truck"></i>
                     </div>
                     <div class="stat-number"><?php echo $stats['dalam_perjalanan']; ?></div>
                     <div class="stat-label">Perjalanan</div>
-                </div>
-                
-                <div class="stat-card success">
+                </a>
+                <a href="?status=<?php echo ($status_filter == 'selesai' && !$show_deleted) ? '' : 'selesai'; ?>&show_deleted=0" style="text-decoration:none;" class="stat-card success<?php echo ($status_filter == 'selesai' && !$show_deleted) ? ' active' : ''; ?>">
                     <div class="stat-icon success">
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <div class="stat-number"><?php echo $stats['selesai']; ?></div>
                     <div class="stat-label">Selesai</div>
-                </div>
-
+                </a>
                 <?php if ($deleted_count > 0): ?>
-                <div class="stat-card danger">
+                <a href="?show_deleted=<?php echo $show_deleted ? '0' : '1'; ?>" style="text-decoration:none;" class="stat-card danger<?php echo $show_deleted ? ' active' : ''; ?>">
                     <div class="stat-icon danger">
                         <i class="fas fa-trash"></i>
                     </div>
                     <div class="stat-number"><?php echo $deleted_count; ?></div>
                     <div class="stat-label">Terhapus</div>
-                </div>
+                </a>
                 <?php endif; ?>
             </div>
             
@@ -2245,19 +2312,29 @@ if (isset($_GET['get_status_badge']) && $_GET['get_status_badge'] == '1' && isse
                                                             <div>Antar/Jemput: Rp <?php echo number_format($harga_antar_jemput, 0, ',', '.'); ?></div>
                                                         <?php endif; ?>
                                                     </div>
-                                                    <?php if (!$is_deleted && !$is_selesai): ?>
-                                                        <button class="btn btn-sm btn-warning" style="padding: 3px 8px; font-size: 0.7rem;" 
-                                                                data-bs-toggle="modal" data-bs-target="#editHargaModal" 
-                                                                data-id="<?php echo $row['id']; ?>" 
+                                                    <?php if (!$is_deleted && $row['status'] === 'menunggu'): ?>
+                                                        <button class="btn btn-sm btn-warning" style="padding: 3px 8px; font-size: 0.7rem;"
+                                                                data-bs-toggle="modal" data-bs-target="#editHargaModal"
+                                                                data-id="<?php echo $row['id']; ?>"
                                                                 data-harga="<?php echo $harga_antar_jemput; ?>"
                                                                 data-tracking="<?php echo $row['tracking_code']; ?>"
                                                                 title="Edit Harga">
                                                             <i class="fas fa-edit"></i> Edit
                                                         </button>
-                                                    <?php elseif ($is_selesai): ?>
+                                                    <?php else: ?>
                                                         <small class="text-muted" style="font-size: 0.7rem;">
                                                             <i class="fas fa-lock"></i> Harga Terkunci
                                                         </small>
+                                                    <?php endif; ?>
+                                                    <!-- DROPDOWN STATUS PEMBAYARAN MANUAL -->
+                                                    <?php if (!$is_deleted && $row['status'] !== 'selesai'): ?>
+                                                        <select class="status-dropdown payment-status-select payment-<?php echo $row['status_pembayaran']; ?>" 
+                                                            data-antar-id="<?php echo $row['id']; ?>" 
+                                                            data-tracking="<?php echo $row['tracking_code']; ?>" 
+                                                            style="margin-top:6px; font-size:0.9rem; border-radius:8px; padding:4px 10px; width:100%; font-weight:600;">
+                                                            <option value="belum_dibayar" <?php echo $row['status_pembayaran'] === 'belum_dibayar' ? 'selected' : ''; ?>>Belum Dibayar</option>
+                                                            <option value="sudah_dibayar" <?php echo $row['status_pembayaran'] === 'sudah_dibayar' ? 'selected' : ''; ?>>Sudah Dibayar</option>
+                                                        </select>
                                                     <?php endif; ?>
                                                 </div>
                                             </td>
@@ -2377,12 +2454,31 @@ if (isset($_GET['get_status_badge']) && $_GET['get_status_badge'] == '1' && isse
                                                     Antar/Jemput: Rp <?php echo number_format($harga_antar_jemput, 0, ',', '.'); ?>
                                                 <?php endif; ?>
                                             </div>
+                                            <?php if (!$is_deleted && $row['status'] === 'menunggu'): ?>
+                                                <button class="btn btn-warning btn-sm w-100 mt-2" data-bs-toggle="modal" data-bs-target="#editHargaModal"
+                                                        data-id="<?php echo $row['id']; ?>"
+                                                        data-harga="<?php echo $harga_antar_jemput; ?>"
+                                                        data-tracking="<?php echo $row['tracking_code']; ?>">
+                                                    <i class="fas fa-edit"></i> Edit Harga
+                                                </button>
+                                            <?php else: ?>
+                                                <small class="text-muted"><i class="fas fa-lock"></i> Harga Terkunci</small>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="order-card-item">
                                         <div class="order-card-label">Status:</div>
                                         <div class="order-card-value status-mobile"><?php echo getStatusBadgeWithClearProgress($row['status'], $row['id'], $is_deleted, $row['no_hp'], $row['nama_pelanggan_final'], $row['tracking_code']); ?></div>
                                     </div>
+                                    <?php if (!$is_deleted && !$is_selesai): ?>
+                                        <select class="status-dropdown payment-status-select payment-<?php echo $row['status_pembayaran']; ?>" 
+                                            data-antar-id="<?php echo $row['id']; ?>" 
+                                            data-tracking="<?php echo $row['tracking_code']; ?>" 
+                                            style="margin-top:6px; font-size:0.9rem; border-radius:8px; padding:4px 10px; width:100%; font-weight:600;">
+                                            <option value="belum_dibayar" <?php echo $row['status_pembayaran'] === 'belum_dibayar' ? 'selected' : ''; ?>>Belum Dibayar</option>
+                                            <option value="sudah_dibayar" <?php echo $row['status_pembayaran'] === 'sudah_dibayar' ? 'selected' : ''; ?>>Sudah Dibayar</option>
+                                        </select>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="order-card-footer">
                                     <?php if ($is_deleted): ?>
@@ -2978,17 +3074,8 @@ if (isset($_GET['get_status_badge']) && $_GET['get_status_badge'] == '1' && isse
                         .then(dataRes => {
                             if (dataRes.success) {
                                 showStatusMessage(dataRes.message, 'success');
-                                // Update cell status di tabel (desktop)
-                                fetch(window.location.pathname + `?get_status_badge=1&id=${antarId}`)
-                                    .then(r => r.text())
-                                    .then(html => {
-                                        // Desktop
-                                        const statusCell = document.querySelector(`tr[data-antar-id="${antarId}"] td.status-cell`);
-                                        if (statusCell) statusCell.innerHTML = html;
-                                        // Mobile
-                                        const mobileStatus = document.querySelector(`.order-card[data-antar-id="${antarId}"] .order-card-value.status-mobile`);
-                                        if (mobileStatus) mobileStatus.innerHTML = html;
-                                    });
+                                setTimeout(() => window.location.reload(), 1000); // reload otomatis setelah update status sukses
+                                // ...update cell status/harga jika ingin tanpa reload...
                             } else {
                                 showStatusMessage(dataRes.message, 'error');
                             }
@@ -2997,6 +3084,34 @@ if (isset($_GET['get_status_badge']) && $_GET['get_status_badge'] == '1' && isse
                     };
                 }
             }
+        });
+
+        document.querySelectorAll('.status-dropdown[data-antar-id]').forEach(function(drop) {
+            drop.addEventListener('change', function() {
+                var antarId = this.getAttribute('data-antar-id');
+                var tracking = this.getAttribute('data-tracking');
+                var value = this.value;
+                this.disabled = true;
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        update_payment_status: 1,
+                        antar_jemput_id: antarId,
+                        tracking_code: tracking,
+                        status_pembayaran: value
+                    })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    showStatusMessage(data.message, data.success ? 'success' : 'error');
+                    if (data.success) setTimeout(()=>window.location.reload(), 1000);
+                    else this.disabled = false;
+                })
+                .catch(()=>{
+                    showStatusMessage('Gagal update status pembayaran', 'error');
+                    this.disabled = false;
+                });
+            });
         });
     </script>
 </body>

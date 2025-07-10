@@ -51,23 +51,24 @@ function getLaporanData($conn, $periode, $bulan, $tahun, $jenis_laporan) {
             FROM pesanan p 
             WHERE DATE(p.waktu) BETWEEN ? AND ? 
             AND p.status_pembayaran = 'sudah_dibayar'
+            AND p.deleted_at IS NULL
             GROUP BY DATE(p.waktu)
             ORDER BY DATE(p.waktu) ASC";
             
         } elseif ($jenis_laporan === 'antar_jemput') {
             // Hanya layanan antar jemput
             $query = "SELECT 
-                DATE(COALESCE(aj.waktu_antar, aj.waktu_jemput)) as tanggal,
+                DATE(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) as tanggal,
                 SUM(COALESCE(aj.harga, 5000)) as total_harga,
                 0 as jumlah_pesanan,
                 COUNT(DISTINCT aj.id) as jumlah_antar_jemput
             FROM antar_jemput aj 
-            WHERE DATE(COALESCE(aj.waktu_antar, aj.waktu_jemput)) BETWEEN ? AND ? 
+            WHERE DATE(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) BETWEEN ? AND ? 
             AND aj.status = 'selesai'
             -- PERBAIKAN: Mengubah kondisi deleted_at untuk menangani NULL dengan benar
             AND aj.deleted_at IS NULL
-            GROUP BY DATE(COALESCE(aj.waktu_antar, aj.waktu_jemput))
-            ORDER BY DATE(COALESCE(aj.waktu_antar, aj.waktu_jemput)) ASC";
+            GROUP BY DATE(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput)))
+            ORDER BY DATE(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) ASC";
             
         } else {
             // Gabungan semua (pesanan + antar jemput)
@@ -85,21 +86,22 @@ function getLaporanData($conn, $periode, $bulan, $tahun, $jenis_laporan) {
                 FROM pesanan p 
                 WHERE DATE(p.waktu) BETWEEN ? AND ? 
                 AND p.status_pembayaran = 'sudah_dibayar'
+                AND p.deleted_at IS NULL
                 GROUP BY DATE(p.waktu)
                 
                 UNION ALL
                 
                 SELECT 
-                    DATE(COALESCE(aj.waktu_antar, aj.waktu_jemput)) as tanggal,
+                    DATE(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) as tanggal,
                     SUM(COALESCE(aj.harga, 5000)) as total_harga,
                     0 as jumlah_pesanan,
                     COUNT(DISTINCT aj.id) as jumlah_antar_jemput
                 FROM antar_jemput aj 
-                WHERE DATE(COALESCE(aj.waktu_antar, aj.waktu_jemput)) BETWEEN ? AND ? 
+                WHERE DATE(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) BETWEEN ? AND ? 
                 AND aj.status = 'selesai'
                 -- PERBAIKAN: Mengubah kondisi deleted_at untuk menangani NULL dengan benar
                 AND aj.deleted_at IS NULL
-                GROUP BY DATE(COALESCE(aj.waktu_antar, aj.waktu_jemput))
+                GROUP BY DATE(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput)))
             ) combined
             GROUP BY tanggal
             ORDER BY tanggal ASC";
@@ -153,23 +155,24 @@ function getLaporanData($conn, $periode, $bulan, $tahun, $jenis_laporan) {
             FROM pesanan p 
             WHERE YEAR(p.waktu) = ? 
             AND p.status_pembayaran = 'sudah_dibayar'
+            AND p.deleted_at IS NULL
             GROUP BY DATE_FORMAT(p.waktu, '%Y-%m')
             ORDER BY DATE_FORMAT(p.waktu, '%Y-%m') ASC";
             
         } elseif ($jenis_laporan === 'antar_jemput') {
             // Hanya layanan antar jemput
             $query = "SELECT 
-                DATE_FORMAT(COALESCE(aj.waktu_antar, aj.waktu_jemput), '%Y-%m') as bulan,
+                DATE_FORMAT(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput)), '%Y-%m') as bulan,
                 SUM(COALESCE(aj.harga, 5000)) as total_harga,
                 0 as jumlah_pesanan,
                 COUNT(DISTINCT aj.id) as jumlah_antar_jemput
             FROM antar_jemput aj 
-            WHERE YEAR(COALESCE(aj.waktu_antar, aj.waktu_jemput)) = ? 
+            WHERE YEAR(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) = ? 
             AND aj.status = 'selesai'
             -- PERBAIKAN: Mengubah kondisi deleted_at untuk menangani NULL dengan benar
             AND aj.deleted_at IS NULL
-            GROUP BY DATE_FORMAT(COALESCE(aj.waktu_antar, aj.waktu_jemput), '%Y-%m')
-            ORDER BY DATE_FORMAT(COALESCE(aj.waktu_antar, aj.waktu_jemput), '%Y-%m') ASC";
+            GROUP BY DATE_FORMAT(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput)), '%Y-%m')
+            ORDER BY DATE_FORMAT(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput)), '%Y-%m') ASC";
             
         } else {
             // Gabungan semua (pesanan + antar jemput)
@@ -187,21 +190,22 @@ function getLaporanData($conn, $periode, $bulan, $tahun, $jenis_laporan) {
                 FROM pesanan p 
                 WHERE YEAR(p.waktu) = ? 
                 AND p.status_pembayaran = 'sudah_dibayar'
+                AND p.deleted_at IS NULL
                 GROUP BY DATE_FORMAT(p.waktu, '%Y-%m')
                 
                 UNION ALL
                 
                 SELECT 
-                    DATE_FORMAT(COALESCE(aj.waktu_antar, aj.waktu_jemput), '%Y-%m') as bulan,
+                    DATE_FORMAT(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput)), '%Y-%m') as bulan,
                     SUM(COALESCE(aj.harga, 5000)) as total_harga,
                     0 as jumlah_pesanan,
                     COUNT(DISTINCT aj.id) as jumlah_antar_jemput
                 FROM antar_jemput aj 
-                WHERE YEAR(COALESCE(aj.waktu_antar, aj.waktu_jemput)) = ? 
+                WHERE YEAR(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) = ? 
                 AND aj.status = 'selesai'
                 -- PERBAIKAN: Mengubah kondisi deleted_at untuk menangani NULL dengan benar
                 AND aj.deleted_at IS NULL
-                GROUP BY DATE_FORMAT(COALESCE(aj.waktu_antar, aj.waktu_jemput), '%Y-%m')
+                GROUP BY DATE_FORMAT(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput)), '%Y-%m')
             ) combined
             GROUP BY bulan
             ORDER BY bulan ASC";
@@ -497,6 +501,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_orders') {
         JOIN pelanggan pl ON p.id_pelanggan = pl.id 
         JOIN paket pk ON p.id_paket = pk.id 
         WHERE DATE(p.waktu) = ? AND p.status_pembayaran = 'sudah_dibayar'
+        AND p.deleted_at IS NULL
         GROUP BY p.id
         ORDER BY p.waktu DESC";
         
@@ -518,18 +523,17 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_orders') {
             COALESCE(aj.harga, 5000) as total_harga,
             aj.status,
             'sudah_dibayar' as status_pembayaran,
-            COALESCE(aj.waktu_antar, aj.waktu_jemput) as waktu,
+            COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput)) as waktu,
             COALESCE(pl.nama, aj.nama_pelanggan, 'Pelanggan Tidak Dikenal') as nama_pelanggan,
             COALESCE(pl.no_hp, '-') as no_hp,
             CONCAT('Layanan ', UPPER(aj.layanan)) as paket_list,
             'antar_jemput' as jenis_transaksi
         FROM antar_jemput aj 
         LEFT JOIN pelanggan pl ON aj.id_pelanggan = pl.id
-        WHERE DATE(COALESCE(aj.waktu_antar, aj.waktu_jemput)) = ? 
+        WHERE DATE(COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput))) = ? 
         AND aj.status = 'selesai'
-        -- PERBAIKAN: Mengubah kondisi deleted_at untuk menangani NULL dengan benar
         AND aj.deleted_at IS NULL
-        ORDER BY COALESCE(aj.waktu_antar, aj.waktu_jemput) DESC";
+        ORDER BY COALESCE(aj.selesai_at, COALESCE(aj.waktu_antar, aj.waktu_jemput)) DESC";
         
         $stmt = $conn->prepare($query);
         $stmt->bind_param("s", $tanggal);
@@ -575,6 +579,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_monthly_orders') {
         JOIN pelanggan pl ON p.id_pelanggan = pl.id 
         JOIN paket pk ON p.id_paket = pk.id 
         WHERE DATE_FORMAT(p.waktu, '%Y-%m') = ? AND p.status_pembayaran = 'sudah_dibayar'
+        AND p.deleted_at IS NULL
         GROUP BY p.id
         ORDER BY p.waktu DESC";
         

@@ -499,8 +499,8 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
             background: linear-gradient(135deg, #42c3cf, #36b5c0);
             color: white;
             border: none;
-            border-radius: 15px;
-            padding: 1rem 2rem;
+            border-radius: 50px;
+            padding: 1.4rem 1.7rem;
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 2rem;
@@ -1317,7 +1317,53 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
             color: #42c3cf;
             border-color: #42c3cf;
         }
- 
+
+        .stat-card.active {
+            border: 2.5px solid #42c3cf !important;
+            box-shadow: 0 0 0 2px #42c3cf33, 0 8px 25px rgba(66,195,207,0.12);
+            background: #e6fafd;
+        }
+        .stat-card:hover {
+            filter: brightness(0.97);
+            box-shadow: 0 8px 25px rgba(66,195,207,0.18);
+        }
+        .stat-card.danger {
+            background: #fff5f5;
+            border-top: 4px solid #dc3545;
+        }
+        .stat-card.danger .stat-icon.danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+        .stat-card input[type="checkbox"]:checked + .stat-icon,
+        .stat-card.active .stat-icon {
+            box-shadow: 0 0 0 2px #42c3cf, 0 8px 25px rgba(66,195,207,0.12);
+        }
+        .stat-card input[type="checkbox"]:checked ~ .checkmark,
+        .stat-card.active .checkmark {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            width: 22px;
+            height: 22px;
+            background: #42c3cf;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.1rem;
+            content: '\2713';
+        }
+        .stat-card .checkmark:after {
+            content: '\2713';
+            font-size: 1.1rem;
+            color: #fff;
+            display: none;
+        }
+        .stat-card input[type="checkbox"]:checked ~ .checkmark:after,
+        .stat-card.active .checkmark:after {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -1330,12 +1376,12 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                 <i class="far fa-calendar-alt"></i> <?php echo $tanggal_sekarang; ?>
             </div>
             
-            <!-- URUTAN BARU: 1. Judul -->
+
             <h1 class="page-title">Daftar Pesanan</h1>
 
-            <!-- URUTAN BARU: 2. Tombol Tambah Pesanan -->
-            <a href="tambah-pesanan.php" class="btn-add-order">
-                <i class="fas fa-plus-circle"></i> Tambah Pesanan Baru
+
+            <a href="buat-pesanan.php" class="btn-add-order">
+                <i class="fas fa-plus-circle"></i> Buat Pesanan Baru
             </a>
 
             <!-- View Toggle -->
@@ -1352,49 +1398,157 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                 <?php endif; ?>
             </div>
 
-            <div class="stats-dashboard">
-                <div class="stat-card primary">
+            <?php if (!$show_deleted): ?>
+            <div class="stats-dashboard" id="filter-checklist">
+                <label class="stat-card primary<?php if (empty($status_filter) && empty($payment_filter)) echo ' active'; ?>" style="text-decoration:none; cursor:pointer;">
+                    <input type="checkbox" class="d-none" id="check-reset" <?php if (empty($status_filter) && empty($payment_filter)) echo 'checked'; ?> data-type="reset">
                     <div class="stat-icon primary">
                         <i class="fas fa-receipt"></i>
                     </div>
                     <div class="stat-number"><?php echo $stats['total_pesanan'] ?? 0; ?></div>
-                    <div class="stat-label"><?php echo $show_deleted ? 'Pesanan Terhapus' : 'Total Pesanan'; ?></div>
-                </div>
-                
-                <?php if (!$show_deleted): ?>
-                <div class="stat-card success">
+                    <div class="stat-label">Semua Pesanan</div>
+                </label>
+                <label class="stat-card success<?php if ($payment_filter === 'sudah_dibayar') echo ' active'; ?>" style="text-decoration:none; cursor:pointer;">
+                    <input type="checkbox" class="d-none" id="check-payment-sudah" data-type="payment" value="sudah_dibayar" <?php if ($payment_filter === 'sudah_dibayar') echo 'checked'; ?>>
                     <div class="stat-icon success">
                         <i class="fas fa-money-bill-wave"></i>
                     </div>
                     <div class="stat-number"><?php echo $stats['sudah_dibayar'] ?? 0; ?></div>
                     <div class="stat-label">Sudah Dibayar</div>
-                </div>
-                
-                <div class="stat-card info">
+                    <span class="checkmark"></span>
+                </label>
+                <label class="stat-card danger<?php if ($payment_filter === 'belum_dibayar') echo ' active'; ?>" style="text-decoration:none; cursor:pointer;">
+                    <input type="checkbox" class="d-none" id="check-payment-belum" data-type="payment" value="belum_dibayar" <?php if ($payment_filter === 'belum_dibayar') echo 'checked'; ?>>
+                    <div class="stat-icon danger">
+                        <i class="fas fa-money-bill"></i>
+                    </div>
+                    <div class="stat-number"><?php echo $stats['belum_dibayar'] ?? 0; ?></div>
+                    <div class="stat-label">Belum Dibayar</div>
+                    <span class="checkmark"></span>
+                </label>
+                <label class="stat-card info<?php if ($status_filter === 'diproses') echo ' active'; ?>" style="text-decoration:none; cursor:pointer;">
+                    <input type="checkbox" class="d-none" id="check-status-diproses" data-type="status" value="diproses" <?php if ($status_filter === 'diproses') echo 'checked'; ?>>
                     <div class="stat-icon info">
                         <i class="fas fa-cog"></i>
                     </div>
                     <div class="stat-number"><?php echo $stats['status_diproses'] ?? 0; ?></div>
                     <div class="stat-label">Diproses</div>
-                </div>
-                
-                <div class="stat-card success">
+                    <span class="checkmark"></span>
+                </label>
+                <label class="stat-card success<?php if ($status_filter === 'selesai') echo ' active'; ?>" style="text-decoration:none; cursor:pointer;">
+                    <input type="checkbox" class="d-none" id="check-status-selesai" data-type="status" value="selesai" <?php if ($status_filter === 'selesai') echo 'checked'; ?>>
                     <div class="stat-icon success">
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <div class="stat-number"><?php echo $stats['status_selesai'] ?? 0; ?></div>
                     <div class="stat-label">Selesai</div>
-                </div>
-                <?php else: ?>
-                <div class="stat-card danger">
-                    <div class="stat-icon danger">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="stat-number"><?php echo number_format($stats['total_nilai'] ?? 0, 0, ',', '.'); ?></div>
-                    <div class="stat-label">Total Nilai (Rp)</div>
-                </div>
-                <?php endif; ?>
+                    <span class="checkmark"></span>
+                </label>
             </div>
+            <style>
+            .stat-card { position: relative; }
+            .stat-card input[type="checkbox"]:checked + .stat-icon,
+            .stat-card.active .stat-icon {
+                box-shadow: 0 0 0 2px #42c3cf, 0 8px 25px rgba(66,195,207,0.12);
+            }
+            .stat-card input[type="checkbox"]:checked ~ .checkmark,
+            .stat-card.active .checkmark {
+                position: absolute;
+                top: 12px;
+                right: 18px;
+                width: 22px;
+                height: 22px;
+                background: #42c3cf;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                font-size: 1.1rem;
+                content: '\2713';
+            }
+            .stat-card .checkmark:after {
+                content: '\2713';
+                font-size: 1.1rem;
+                color: #fff;
+                display: none;
+            }
+            .stat-card input[type="checkbox"]:checked ~ .checkmark:after,
+            .stat-card.active .checkmark:after {
+                display: block;
+            }
+            </style>
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const dashboard = document.getElementById('filter-checklist');
+                if (!dashboard) return;
+                const paymentCheckboxes = dashboard.querySelectorAll('input[data-type="payment"]');
+                const statusCheckboxes = dashboard.querySelectorAll('input[data-type="status"]');
+                const resetCheckbox = dashboard.querySelector('input[data-type="reset"]');
+
+                function updateFilter() {
+                    let params = new URLSearchParams(window.location.search);
+                    // Payment
+                    let payment = '';
+                    paymentCheckboxes.forEach(cb => { if (cb.checked) payment = cb.value; });
+                    if (payment) params.set('payment', payment); else params.delete('payment');
+                    // Status
+                    let status = '';
+                    statusCheckboxes.forEach(cb => { if (cb.checked) status = cb.value; });
+                    if (status) params.set('status', status); else params.delete('status');
+                    // Reset
+                    if (resetCheckbox && resetCheckbox.checked) {
+                        params.delete('payment');
+                        params.delete('status');
+                    }
+                    window.location.search = params.toString();
+                }
+
+                paymentCheckboxes.forEach(cb => {
+                    cb.parentElement.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // Toggle: jika sudah checked, uncheck (hapus filter)
+                        if (cb.checked) {
+                            cb.checked = false;
+                        } else {
+                            // Uncheck all payment
+                            paymentCheckboxes.forEach(c => c.checked = false);
+                            cb.checked = true;
+                        }
+                        // Uncheck reset
+                        if (resetCheckbox) resetCheckbox.checked = false;
+                        updateFilter();
+                    });
+                });
+                statusCheckboxes.forEach(cb => {
+                    cb.parentElement.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // Toggle: jika sudah checked, uncheck (hapus filter)
+                        if (cb.checked) {
+                            cb.checked = false;
+                        } else {
+                            // Uncheck all status
+                            statusCheckboxes.forEach(c => c.checked = false);
+                            cb.checked = true;
+                        }
+                        // Uncheck reset
+                        if (resetCheckbox) resetCheckbox.checked = false;
+                        updateFilter();
+                    });
+                });
+                if (resetCheckbox) {
+                    resetCheckbox.parentElement.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // Uncheck all
+                        paymentCheckboxes.forEach(c => c.checked = false);
+                        statusCheckboxes.forEach(c => c.checked = false);
+                        resetCheckbox.checked = true;
+                        updateFilter();
+                    });
+                }
+            });
+            </script>
+            <?php endif; ?>
 
             <!-- Current Filter Info -->
             <?php if ($has_active_filters): ?>
@@ -1496,30 +1650,7 @@ $has_active_filters = !empty($search) || !empty($status_filter) || !empty($payme
                             </div>
                         </div>
                         
-                        <div class="col-12 col-md-4">
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="mb-3">
-                                        <label for="status" class="form-label fw-semibold">Status</label>
-                                        <select class="form-select" id="status" name="status">
-                                            <option value="">Semua Status</option>
-                                            <option value="diproses" <?php echo $status_filter === 'diproses' ? 'selected' : ''; ?>>Diproses</option>
-                                            <option value="selesai" <?php echo $status_filter === 'selesai' ? 'selected' : ''; ?>>Selesai</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="mb-3">
-                                        <label for="payment" class="form-label fw-semibold">Pembayaran</label>
-                                        <select class="form-select" id="payment" name="payment">
-                                            <option value="">Semua Status</option>
-                                            <option value="belum_dibayar" <?php echo $payment_filter === 'belum_dibayar' ? 'selected' : ''; ?>>Belum Dibayar</option>
-                                            <option value="sudah_dibayar" <?php echo $payment_filter === 'sudah_dibayar' ? 'selected' : ''; ?>>Sudah Dibayar</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
                     
                     <div class="d-flex justify-content-end gap-2">

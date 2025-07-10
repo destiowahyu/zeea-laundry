@@ -29,13 +29,25 @@ $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM pesanan WHERE status = 'se
 $stmt->execute();
 $pesananSelesai = $stmt->get_result()->fetch_assoc()['total'];
 
-// Fetch total pemasukan hari ini - PERBAIKAN: Handle null values
-$stmt = $conn->prepare("SELECT COALESCE(SUM(harga), 0) AS total FROM pesanan WHERE DATE(waktu) = CURDATE()");
+// Fetch total pemasukan hari ini - sesuai laporan pemasukan
+// Dari pesanan
+$stmt = $conn->prepare("SELECT COALESCE(SUM(harga), 0) AS total FROM pesanan WHERE DATE(waktu) = CURDATE() AND status_pembayaran = 'sudah_dibayar' AND deleted_at IS NULL");
 $stmt->execute();
-$pemasukanHariIni = $stmt->get_result()->fetch_assoc()['total'];
+$pemasukanPesananHariIni = $stmt->get_result()->fetch_assoc()['total'];
 
+// Dari antar_jemput (status selesai, belum dihapus, tanggal selesai/antar/jemput hari ini)
+$stmt = $conn->prepare("SELECT COALESCE(SUM(COALESCE(harga, 5000)), 0) AS total FROM antar_jemput WHERE status = 'selesai' AND deleted_at IS NULL AND DATE(COALESCE(selesai_at, COALESCE(waktu_antar, waktu_jemput))) = CURDATE()");
+$stmt->execute();
+$pemasukanAntarJemputHariIni = $stmt->get_result()->fetch_assoc()['total'];
+
+$pemasukanHariIni = $pemasukanPesananHariIni + $pemasukanAntarJemputHariIni;
 // Pastikan nilai tidak null untuk number_format
 $pemasukanHariIni = $pemasukanHariIni ?? 0;
+
+// Fetch jumlah antar jemput menunggu
+$stmt = $conn->prepare("SELECT COUNT(*) AS total FROM antar_jemput WHERE status = 'menunggu' AND deleted_at IS NULL");
+$stmt->execute();
+$antarJemputMenunggu = $stmt->get_result()->fetch_assoc()['total'];
 
 // Get current store status - hanya ambil record dengan id = 1
 $storeStatusQuery = "SELECT status, waktu FROM toko_status WHERE id = 1 LIMIT 1";
@@ -409,11 +421,11 @@ $stmt->close();
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a href="riwayat-transaksi.php" style="text-decoration:none;">
+                        <a href="antar-jemput.php?status=menunggu" style="text-decoration:none;">
                             <div class="card-dashboard h-100">
-                                <i class="fas fa-history"></i>
-                                <h5>Riwayat Transaksi</h5>
-                                <p>Lihat Semua Riwayat</p>
+                                <i class="fas fa-truck"></i>
+                                <h5>Antar Jemput Menunggu</h5>
+                                <p><?= $antarJemputMenunggu ?></p>
                             </div>
                         </a>
                     </div>
