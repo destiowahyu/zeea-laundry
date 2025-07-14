@@ -28,7 +28,24 @@ if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="image" href="assets/images/zeea_laundry.png" type="image/png" fetchpriority="high">
+    <link rel="preload" as="image" href="assets/images/favicon.png" type="image/png">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <style>
+        /* Initial loading state - hide everything until splash is ready */
+        body { 
+            visibility: hidden; 
+            opacity: 0;
+        }
+        
+        body.splash-ready {
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        
         :root {
             --primary: #42c3cf;
             --primary-light: #e8f7f9;
@@ -69,6 +86,7 @@ if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
             justify-content: center;
             z-index: 9999;
             transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+            will-change: opacity, visibility;
         }
         
         .splash-content {
@@ -76,10 +94,43 @@ if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
             animation: fadeInUp 0.8s ease forwards;
         }
         
+        .splash-loading {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         .splash-logo {
             width: 180px;
             height: 180px;
             animation: pulse 2s infinite;
+            object-fit: contain;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+        
+        .splash-logo-container {
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
         }
         
         .splash-text {
@@ -90,6 +141,13 @@ if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
             opacity: 0;
             animation: fadeIn 1s ease forwards 0.5s;
         }
+        
+        .splash-ready .splash-text {
+            opacity: 1;
+            animation: none;
+        }
+        
+        .hidden { display: none !important; }
         
         /* Navbar */
         .navbar {
@@ -1772,8 +1830,18 @@ if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
                 height: 150px;
             }
             
+            .splash-logo-container {
+                width: 150px;
+                height: 150px;
+            }
+            
             .splash-text {
                 font-size: 1.5rem;
+            }
+            
+            .splash-loading {
+                width: 30px;
+                height: 30px;
             }
             
             .hero-title {
@@ -1960,8 +2028,10 @@ if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
     <!-- Splash Screen -->
     <div class="splash-screen" id="splashScreen">
         <div class="splash-content">
-            <img src="assets/images/zeea_laundry.png" alt="Zeea Laundry Logo" class="splash-logo">
-            <div class="splash-text">Rapi, Bersih, Wangi</div>
+            <div class="splash-logo-container">
+                <img src="assets/images/zeea_laundry.png" alt="Zeea Laundry Logo" class="splash-logo" id="splashLogo" onload="handleSplashImageLoad()" onerror="handleSplashImageError()" loading="eager" decoding="sync">
+            </div>
+            <div class="splash-text" id="splashText">Rapi, Bersih, Wangi</div>
         </div>
     </div>
 
@@ -2514,15 +2584,94 @@ if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Polyfill for older browsers
+        if (!window.requestAnimationFrame) {
+            window.requestAnimationFrame = function(callback) {
+                return setTimeout(callback, 16);
+            };
+        }
+        // Global variables for splash screen
+        let splashImageLoaded = false;
+        let splashTimeout = null;
+        
+        function showSplashScreen() {
+            document.body.classList.add('splash-ready');
+        }
+        
+        function handleSplashImageLoad() {
+            splashImageLoaded = true;
+            showSplashScreen();
+            setTimeout(hideSplashScreen, 2000); // tampil 2 detik
+        }
+        
+        function handleSplashImageError() {
+            showSplashScreen();
+            setTimeout(hideSplashScreen, 2000);
+        }
+        
+        function hideSplashScreen() {
             const splashScreen = document.getElementById('splashScreen');
-            const mainContent = document.getElementById('mainContent');
-            
-            // splash
-            setTimeout(function() {
+            if (splashScreen) {
                 splashScreen.style.opacity = '0';
                 splashScreen.style.visibility = 'hidden';
-            }, 2000);
+                setTimeout(() => {
+                    if (splashScreen.parentNode) splashScreen.parentNode.removeChild(splashScreen);
+                }, 500);
+            }
+        }
+        
+        // Preload critical images
+        function preloadImages() {
+            const criticalImages = [
+                'assets/images/zeea_laundry.png',
+                'assets/images/favicon.png'
+            ];
+            
+            criticalImages.forEach(src => {
+                const img = new Image();
+                img.onload = function() {
+                    console.log('Preloaded:', src);
+                };
+                img.onerror = function() {
+                    console.log('Failed to preload:', src);
+                };
+                img.src = src;
+            });
+        }
+        
+        // Start preloading images immediately
+        preloadImages();
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const splashLogo = document.getElementById('splashLogo');
+            
+            // Check if image is already loaded
+            if (splashLogo && splashLogo.complete && splashLogo.naturalHeight !== 0) {
+                splashImageLoaded = true;
+                handleSplashImageLoad();
+            } else if (splashLogo) {
+                splashLogo.addEventListener('load', function() {
+                    splashImageLoaded = true;
+                    handleSplashImageLoad();
+                });
+                
+                splashLogo.addEventListener('error', function() {
+                    handleSplashImageError();
+                });
+            } else {
+                // Fallback if image element not found
+                setTimeout(handleSplashImageError, 1000);
+            }
+            
+            // Fallback timeout to ensure page shows
+            setTimeout(function() {
+                if (!document.body.classList.contains('splash-ready')) {
+                    console.log('Force showing page due to timeout');
+                    showSplashScreen();
+                    setTimeout(hideSplashScreen, 2000);
+                }
+            }, 5000); // Maximum 5 seconds
+
             
             // Navbar scroll effect
             const navbar = document.getElementById('navbar');
