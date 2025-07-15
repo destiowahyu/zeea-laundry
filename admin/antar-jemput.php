@@ -185,8 +185,8 @@ function getOrderDetails($conn, $antar_jemput_id) {
             
             while ($pesanan = $result_pesanan->fetch_assoc()) {
                 $pesanan_list[] = $pesanan;
-                $total_berat += $pesanan['berat'];
-                $total_harga += $pesanan['harga'];
+                $total_berat += (float)$pesanan['berat'];
+                $total_harga += (float)$pesanan['harga'];
                 $paket_names[] = $pesanan['nama_paket'];
                 $berat_values[] = $pesanan['berat'];
                 $harga_values[] = $pesanan['harga'];
@@ -203,7 +203,10 @@ function getOrderDetails($conn, $antar_jemput_id) {
                     'waktu_pesanan' => $pesanan_list[0]['waktu'],
                     'paket_list' => implode(', ', $paket_names),
                     'berat_list' => implode(', ', $berat_values),
-                    'harga_list' => implode(', ', $harga_values)
+                    'harga_list' => implode(', ', $harga_values),
+                    // Tambahan agar harga_pesanan dan harga_custom selalu numerik
+                    'harga_pesanan' => $total_harga,
+                    'harga_custom' => isset($antar_jemput_data['harga']) ? (float)$antar_jemput_data['harga'] : 5000
                 ]);
             }
         }
@@ -220,7 +223,10 @@ function getOrderDetails($conn, $antar_jemput_id) {
         'waktu_pesanan' => $antar_jemput_data['waktu_antar'] ?: $antar_jemput_data['waktu_jemput'],
         'paket_list' => null,
         'berat_list' => null,
-        'harga_list' => null
+        'harga_list' => null,
+        // Tambahan agar harga_pesanan dan harga_custom selalu numerik
+        'harga_pesanan' => 0,
+        'harga_custom' => isset($antar_jemput_data['harga']) ? (float)$antar_jemput_data['harga'] : 5000
     ]);
 }
 
@@ -2873,9 +2879,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_payment_status
                     return;
                 }
                 const d = res.orderDetails;
+                // --- FIX: pastikan harga numerik agar tidak NaN ---
+                const hargaPesanan = Number(d.harga_pesanan) || 0;
+                const hargaCustom = Number(d.harga_custom) || 5000;
                 const totalHarga = d.status_pembayaran === 'sudah_dibayar' 
-                    ? (d.harga_custom || 5000) 
-                    : (parseInt(d.harga_pesanan) + (d.harga_custom || 5000));
+                    ? hargaCustom 
+                    : (hargaPesanan + hargaCustom);
                 let alamatHtml = '';
                 if (d.layanan === 'antar' || d.layanan === 'antar-jemput') {
                     alamatHtml += `
@@ -2947,8 +2956,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_payment_status
                                     <span class="text-success fw-bold fs-5">Rp ${totalHarga.toLocaleString('id-ID')}</span>
                                     <br><small class="text-muted">
                                         ${d.status_pembayaran === 'sudah_dibayar' 
-                                            ? `Antar/Jemput: Rp ${(d.harga_custom || 5000).toLocaleString('id-ID')}` 
-                                            : `Pesanan: Rp ${parseInt(d.harga_pesanan).toLocaleString('id-ID')}<br>Antar/Jemput: Rp ${(d.harga_custom || 5000).toLocaleString('id-ID')}`
+                                            ? `Antar/Jemput: Rp ${hargaCustom.toLocaleString('id-ID')}` 
+                                            : `Pesanan: Rp ${hargaPesanan.toLocaleString('id-ID')}<br>Antar/Jemput: Rp ${hargaCustom.toLocaleString('id-ID')}`
                                         }
                                     </small>
                                 </div>

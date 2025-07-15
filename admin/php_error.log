@@ -1,0 +1,752 @@
+[15-Jul-2025 12:34:57 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 692
+[15-Jul-2025 12:34:57 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 755
+[15-Jul-2025 12:34:57 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 692
+[15-Jul-2025 12:34:57 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 755
+[15-Jul-2025 12:35:06 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 692
+[15-Jul-2025 12:35:06 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 755
+[15-Jul-2025 12:35:06 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 692
+[15-Jul-2025 12:35:06 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 755
+[15-Jul-2025 12:35:11 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 692
+[15-Jul-2025 12:35:11 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 755
+[15-Jul-2025 12:35:11 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 692
+[15-Jul-2025 12:35:11 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 755
+[15-Jul-2025 12:35:13 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 692
+[15-Jul-2025 12:35:13 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 755
+[15-Jul-2025 12:35:13 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 692
+[15-Jul-2025 12:35:13 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 755
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 707
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 767
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 707
+[15-Jul-2025 12:38:06 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 767
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 707
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 767
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 707
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 767
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 707
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 767
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 707
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 767
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 707
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 767
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 707
+[15-Jul-2025 12:38:08 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 767
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 707
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 767
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 707
+[15-Jul-2025 12:38:33 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 767
+[15-Jul-2025 12:38:38 Asia/Jakarta] [DEBUG] Memproses permintaan update profil.
+[15-Jul-2025 12:38:38 Asia/Jakarta] [DEBUG] Data POST yang diterima: Array
+(
+    [current_foto] => <br />
+<b>Deprecated</b>:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in <b>C:\laragon\www\zeea-laundry\admin\profil.php</b> on line <b>707</b><br />
+
+    [cropped_image] => 
+    [username] => oke2
+    [password] => 
+    [update_profile] => 
+)
+
+[15-Jul-2025 12:38:38 Asia/Jakarta] [DEBUG] cropped_image TIDAK ditemukan atau kosong dalam data POST. Menggunakan foto profil yang sudah ada.
+[15-Jul-2025 12:38:38 Asia/Jakarta] [DEBUG] Profil berhasil diperbarui di database. Mengarahkan ulang...
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:42 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:47 Asia/Jakarta] [DEBUG] Memproses permintaan update profil.
+[15-Jul-2025 12:38:47 Asia/Jakarta] [DEBUG] Data POST yang diterima: Array
+(
+    [current_foto] => <br />
+<b>Deprecated</b>:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in <b>C:\laragon\www\zeea-laundry\admin\profil.php</b> on line <b>707</b><br />
+
+    [cropped_image] => 
+    [username] => oke
+    [password] => 
+    [update_profile] => 
+)
+
+[15-Jul-2025 12:38:47 Asia/Jakarta] [DEBUG] cropped_image TIDAK ditemukan atau kosong dalam data POST. Menggunakan foto profil yang sudah ada.
+[15-Jul-2025 12:38:47 Asia/Jakarta] [DEBUG] Profil berhasil diperbarui di database. Mengarahkan ulang...
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:47 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:57 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:38:59 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:39:00 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:39:09 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:17 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:18 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:23 Asia/Jakarta] [DEBUG] Memproses permintaan hapus foto profil.
+[15-Jul-2025 12:41:23 Asia/Jakarta] [WARNING] Gagal menghapus foto lama, file tidak ditemukan: ../assets/uploads/profil_admin/<br />
+<b>Deprecated</b>:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in <b>C:\laragon\www\zeea-laundry\admin\profil.php</b> on line <b>707</b><br />
+
+[15-Jul-2025 12:41:23 Asia/Jakarta] [DEBUG] Foto profil berhasil diatur ke NULL di database.
+[15-Jul-2025 12:41:23 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:23 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:23 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:23 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:23 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:23 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:23 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:23 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:23 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:23 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 711
+[15-Jul-2025 12:41:23 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 771
+[15-Jul-2025 12:41:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:24 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 711
+[15-Jul-2025 12:41:24 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 771
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 711
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 771
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 711
+[15-Jul-2025 12:41:25 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 771
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 711
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 771
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 711
+[15-Jul-2025 12:41:35 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 771
+[15-Jul-2025 12:41:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:37 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 711
+[15-Jul-2025 12:41:37 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 771
+[15-Jul-2025 12:41:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:38 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:38 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 711
+[15-Jul-2025 12:41:38 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 771
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 711
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 771
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 711
+[15-Jul-2025 12:41:39 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 771
+[15-Jul-2025 12:41:45 Asia/Jakarta] [DEBUG] Memproses permintaan update profil.
+[15-Jul-2025 12:41:45 Asia/Jakarta] [DEBUG] Data POST yang diterima: Array
+(
+    [current_foto] => <br />
+<b>Deprecated</b>:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in <b>C:\laragon\www\zeea-laundry\admin\profil.php</b> on line <b>711</b><br />
+
+    [cropped_image] => 
+    [username] => oke2
+    [password] => 
+    [update_profile] => 
+)
+
+[15-Jul-2025 12:41:45 Asia/Jakarta] [DEBUG] cropped_image TIDAK ditemukan atau kosong dalam data POST. Menggunakan foto profil yang sudah ada.
+[15-Jul-2025 12:41:45 Asia/Jakarta] [DEBUG] Profil berhasil diperbarui di database. Mengarahkan ulang...
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:45 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:50 Asia/Jakarta] [DEBUG] Memproses permintaan update profil.
+[15-Jul-2025 12:41:50 Asia/Jakarta] [DEBUG] Data POST yang diterima: Array
+(
+    [current_foto] => <br />
+<b>Deprecated</b>:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in <b>C:\laragon\www\zeea-laundry\admin\profil.php</b> on line <b>711</b><br />
+
+    [cropped_image] => 
+    [username] => oke
+    [password] => 
+    [update_profile] => 
+)
+
+[15-Jul-2025 12:41:50 Asia/Jakarta] [DEBUG] cropped_image TIDAK ditemukan atau kosong dalam data POST. Menggunakan foto profil yang sudah ada.
+[15-Jul-2025 12:41:50 Asia/Jakarta] [DEBUG] Profil berhasil diperbarui di database. Mengarahkan ulang...
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:41:50 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:42:11 Asia/Jakarta] [DEBUG] Memproses permintaan hapus foto profil.
+[15-Jul-2025 12:42:11 Asia/Jakarta] [WARNING] Gagal menghapus foto lama, file tidak ditemukan: ../assets/uploads/profil_admin/<br />
+<b>Deprecated</b>:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in <b>C:\laragon\www\zeea-laundry\admin\profil.php</b> on line <b>711</b><br />
+
+[15-Jul-2025 12:42:11 Asia/Jakarta] [DEBUG] Foto profil berhasil diatur ke NULL di database.
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 711
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 771
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 711
+[15-Jul-2025 12:42:11 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 771
+[15-Jul-2025 12:43:16 Asia/Jakarta] PHP Warning:  Undefined variable $adminUsername in C:\laragon\www\zeea-laundry\admin\profil.php on line 187
+[15-Jul-2025 12:43:16 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 
+[15-Jul-2025 12:43:16 Asia/Jakarta] [WARNING] getAdminData: Data admin tidak ditemukan untuk username: 
+[15-Jul-2025 12:43:24 Asia/Jakarta] PHP Warning:  Undefined variable $adminUsername in C:\laragon\www\zeea-laundry\admin\profil.php on line 187
+[15-Jul-2025 12:43:24 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 
+[15-Jul-2025 12:43:24 Asia/Jakarta] [WARNING] getAdminData: Data admin tidak ditemukan untuk username: 
+[15-Jul-2025 05:46:22 UTC] [DEBUG] Sesi valid. Username admin dari sesi: oke
+[15-Jul-2025 12:46:22 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:22 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:22 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:22 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 775
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 835
+[15-Jul-2025 05:46:22 UTC] [DEBUG] Sesi valid. Username admin dari sesi: oke
+[15-Jul-2025 12:46:22 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:22 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:22 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:22 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 775
+[15-Jul-2025 12:46:22 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 835
+[15-Jul-2025 05:46:24 UTC] [DEBUG] Sesi valid. Username admin dari sesi: oke
+[15-Jul-2025 12:46:24 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:24 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:24 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:24 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 775
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 835
+[15-Jul-2025 05:46:24 UTC] [DEBUG] Sesi valid. Username admin dari sesi: oke
+[15-Jul-2025 12:46:24 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:24 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:24 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:24 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 775
+[15-Jul-2025 12:46:24 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 835
+[15-Jul-2025 05:46:30 UTC] [DEBUG] Sesi valid. Username admin dari sesi: oke
+[15-Jul-2025 12:46:30 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:30 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:30 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:30 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 775
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 835
+[15-Jul-2025 05:46:30 UTC] [DEBUG] Sesi valid. Username admin dari sesi: oke
+[15-Jul-2025 12:46:30 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:30 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:30 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:30 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 775
+[15-Jul-2025 12:46:30 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 835
+[15-Jul-2025 05:46:37 UTC] [DEBUG] Sesi valid. Username admin dari sesi: oke
+[15-Jul-2025 12:46:37 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:37 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:37 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:37 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 775
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 835
+[15-Jul-2025 05:46:37 UTC] [DEBUG] Sesi valid. Username admin dari sesi: oke
+[15-Jul-2025 12:46:37 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:37 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:37 Asia/Jakarta] [DEBUG] getAdminData: Mencari data admin untuk username: 'oke'
+[15-Jul-2025 12:46:37 Asia/Jakarta] [DEBUG] getAdminData: Data admin ditemukan: Array
+(
+    [id] => 2
+    [username] => oke
+    [foto_profil] => 
+)
+
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 46
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 49
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 52
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 55
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 58
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 61
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 64
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 67
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Warning:  Undefined variable $current_page in C:\laragon\www\zeea-laundry\admin\sidebar-admin.php on line 70
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 775
+[15-Jul-2025 12:46:37 Asia/Jakarta] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\zeea-laundry\admin\profil.php on line 835

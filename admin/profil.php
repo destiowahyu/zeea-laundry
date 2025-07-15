@@ -9,7 +9,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
 date_default_timezone_set('Asia/Jakarta');
 
 $current_page = basename($_SERVER['PHP_SELF']);
-include '../includes/db.php';
+include '../includes/db.php'; // Pastikan file ini mendefinisikan $conn
 
 // Ambil data admin dari sesi
 $adminUsername = $_SESSION['username'];
@@ -137,7 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_photo'])) {
 // Proses update profil
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $username = $_POST['username'];
-    $password = $_POST['password'];
+    // PERBAIKAN: Menggunakan null coalescing operator untuk menghindari "Undefined array key"
+    $password = $_POST['password'] ?? ''; 
     $current_foto = $_POST['current_foto'];
     
     // Validasi input
@@ -177,8 +178,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
         $foto_profil = uniqid('admin_') . '.' . $image_type;
         $file_path = $upload_dir . $foto_profil;
         
-        // Simpan file
-        file_put_contents($file_path, $image_base64);
+        // PERBAIKAN: Baris ini yang menyebabkan "Permission denied"
+        // Ini akan diperbaiki dengan mengubah izin folder di Linux
+        file_put_contents($file_path, $image_base64); 
         
         // Hapus file foto lama jika ada
         if (!empty($current_foto)) {
@@ -228,13 +230,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <link rel="stylesheet" href="../assets/css/admin/styles.css">
     <link rel="icon" type="image/png" href="../assets/images/zeea_laundry.png">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <style>
+        /* ... (CSS Anda yang sudah ada) ... */
         .profile-container {
             background-color: white;
             border-radius: 15px;
@@ -632,16 +635,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                             <?php else: ?>
                                 <img src="../assets/images/default-avatar.png" alt="Foto Profil Default" class="profile-avatar">
                             <?php endif; ?>
+                            
+                            <!-- PERBAIKAN: Kembali ke Bootstrap dropdown yang benar -->
                             <div class="avatar-edit-btn" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-camera"></i>
                             </div>
-                            <!-- Input file tersembunyi untuk langsung memilih file -->
+                            
+                            <!-- Input file tersembunyi -->
                             <input type="file" id="hiddenFileInput" accept="image/*" style="display: none;">
                             
+                            <!-- Dropdown menu -->
                             <ul class="dropdown-menu avatar-dropdown-menu">
-                                <li><a class="dropdown-item" id="uploadPhotoBtn"><i class="fas fa-upload me-2"></i>Ganti Foto</a></li>
+                                <li><a class="dropdown-item" href="#" id="uploadPhotoBtn"><i class="fas fa-upload me-2"></i>Ganti Foto</a></li>
                                 <?php if (!empty($adminFoto)): ?>
-                                <li><a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePhotoModal"><i class="fas fa-trash-alt me-2"></i>Hapus Foto</a></li>
+                                <li><a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deletePhotoModal"><i class="fas fa-trash-alt me-2"></i>Hapus Foto</a></li>
                                 <?php endif; ?>
                             </ul>
                         </div>
@@ -701,10 +708,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     </div>
 </div>
 
-<!-- Cambiar la estructura del modal para garantizar que los botones siempre sean visibles -->
-<!-- Modificar el modal de carga de fotos para reducir la altura y mostrar los botones sin scroll -->
-
-<!-- Reemplazar el modal de carga de fotos actual con esta versión optimizada -->
+<!-- Modal Upload Foto -->
 <div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-labelledby="uploadPhotoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -776,20 +780,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Actualizar el script para ajustar la configuración del cropper
-    let cropper;
-    
-    // Detectar si es dispositivo móvil
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+// PERBAIKAN: JavaScript yang benar tanpa syntax error
+let cropper;
+const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-    // Ketika tombol "Ganti Foto" diklik, langsung trigger input file
-    document.getElementById('uploadPhotoBtn').addEventListener('click', function() {
+// Variabel PHP yang di-escape dengan benar
+const adminFoto = <?php echo json_encode($adminFoto); ?>;
+const adminName = <?php echo json_encode($adminName); ?>;
+const currentScript = <?php echo json_encode($_SERVER["PHP_SELF"]); ?>;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listener untuk tombol "Ganti Foto"
+    document.getElementById('uploadPhotoBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('Upload button clicked');
         document.getElementById('hiddenFileInput').click();
     });
-
-    // Ketika file dipilih melalui input tersembunyi
+    
+    // Event listener untuk file input
     document.getElementById('hiddenFileInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
+        console.log('File selected:', file);
+        
         if (file) {
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -797,7 +809,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                 const uploadModal = new bootstrap.Modal(document.getElementById('uploadPhotoModal'));
                 uploadModal.show();
                 
-                // Aplicar clase fullscreen en móviles
+                // Aplikasi fullscreen di mobile
                 if (isMobile) {
                     setTimeout(() => {
                         document.querySelector('#uploadPhotoModal .modal-dialog').classList.add('mobile-fullscreen');
@@ -808,14 +820,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                 const cropImage = document.getElementById('cropImage');
                 cropImage.src = event.target.result;
                 
-                // Esperar a que la imagen se cargue
                 cropImage.onload = function() {
                     // Destroy cropper jika sudah ada
                     if (cropper) {
                         cropper.destroy();
                     }
-                
-                    // Configuración optimizada para escritorio y móviles
+                    
+                    // Konfigurasi cropper
                     const cropperOptions = {
                         aspectRatio: 1,
                         viewMode: isMobile ? 0 : 1,
@@ -835,11 +846,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                         modal: true,
                         center: true
                     };
-                
+                    
                     // Inisialisasi cropper
                     cropper = new Cropper(cropImage, cropperOptions);
-                
-                    // Ajustar tamaño después de inicializar
+                    
+                    // Resize setelah inisialisasi
                     setTimeout(() => {
                         window.dispatchEvent(new Event('resize'));
                     }, 500);
@@ -849,20 +860,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
         }
     });
     
-    // Controles de zoom y rotación
+    // Kontrol zoom dan rotasi
     document.getElementById('zoomInBtn').addEventListener('click', function() {
-        cropper.zoom(0.1);
+        if (cropper) cropper.zoom(0.1);
     });
     
     document.getElementById('zoomOutBtn').addEventListener('click', function() {
-        cropper.zoom(-0.1);
+        if (cropper) cropper.zoom(-0.1);
     });
     
     document.getElementById('rotateBtn').addEventListener('click', function() {
-        cropper.rotate(90);
+        if (cropper) cropper.rotate(90);
     });
     
-    // Tombol simpan foto yang sudah di-crop
+    // Tombol simpan
     document.getElementById('saveButton').addEventListener('click', function() {
         if (cropper) {
             // Get cropped canvas
@@ -878,40 +889,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                 imageSmoothingQuality: 'high',
             });
             
-            // Convert canvas to base64 string
+            // Convert ke base64
             const croppedImageData = canvas.toDataURL('image/jpeg');
             
-            // Submit the form
+            // Submit form
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = '<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>';
+            form.action = currentScript;
             
-            // Add hidden inputs
-            const currentFotoInput = document.createElement('input');
-            currentFotoInput.type = 'hidden';
-            currentFotoInput.name = 'current_foto';
-            currentFotoInput.value = '<?php echo htmlspecialchars($adminFoto); ?>';
-            form.appendChild(currentFotoInput);
+            // Hidden inputs
+            const inputs = [
+                {name: 'current_foto', value: adminFoto || ''},
+                {name: 'cropped_image', value: croppedImageData},
+                {name: 'username', value: adminName},
+                {name: 'update_profile', value: '1'}
+            ];
             
-            const croppedImageInput = document.createElement('input');
-            croppedImageInput.type = 'hidden';
-            croppedImageInput.name = 'cropped_image';
-            croppedImageInput.value = croppedImageData;
-            form.appendChild(croppedImageInput);
+            inputs.forEach(input => {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = input.name;
+                hiddenInput.value = input.value;
+                form.appendChild(hiddenInput);
+            });
             
-            const usernameInput = document.createElement('input');
-            usernameInput.type = 'hidden';
-            usernameInput.name = 'username';
-            usernameInput.value = '<?php echo htmlspecialchars($adminName); ?>';
-            form.appendChild(usernameInput);
-            
-            const updateProfileInput = document.createElement('input');
-            updateProfileInput.type = 'hidden';
-            updateProfileInput.name = 'update_profile';
-            updateProfileInput.value = '1';
-            form.appendChild(updateProfileInput);
-            
-            // Append form to body and submit
             document.body.appendChild(form);
             form.submit();
         } else {
@@ -921,26 +922,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     
     // Reset modal saat ditutup
     document.getElementById('uploadPhotoModal').addEventListener('hidden.bs.modal', function() {
-        // Reset input file
         document.getElementById('hiddenFileInput').value = '';
         
-        // Destroy cropper
         if (cropper) {
             cropper.destroy();
             cropper = null;
         }
         
-        // Quitar clase fullscreen
         document.querySelector('#uploadPhotoModal .modal-dialog').classList.remove('mobile-fullscreen');
     });
     
-    // Ajustar cuando cambia la orientación del dispositivo
+    // Resize handler
     window.addEventListener('resize', function() {
         if (cropper) {
             cropper.resize();
         }
     });
+});
 </script>
 </body>
 </html>
-

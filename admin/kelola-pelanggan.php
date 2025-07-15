@@ -341,11 +341,11 @@ if (isset($_GET['ajax_search'])) {
         }
         
         .table-container {
-            background-color: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+            background-color: #fff;
+            border-radius: 18px;
+            padding: 28px 24px;
+            box-shadow: 0 6px 32px rgba(66,195,207,0.10);
+            margin-bottom: 36px;
             overflow-x: auto;
         }
         
@@ -355,7 +355,12 @@ if (isset($_GET['ajax_search'])) {
         }
         
         .table {
-            min-width: 600px;
+            min-width: 650px;
+            border-radius: 16px;
+            overflow: hidden;
+            font-size: 1rem;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(66,195,207,0.07);
         }
 
         h5 {
@@ -364,52 +369,90 @@ if (isset($_GET['ajax_search'])) {
         }
         
         .table th {
-            background-color: #42c3cf;
-            color: white;
-            font-weight: 500;
+            background: linear-gradient(90deg, #42c3cf 0%, #36b5c0 100%);
+            color: #fff;
+            font-weight: 600;
             border: none;
+            padding: 18px 12px;
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
         }
         
         .table th:first-child {
-            border-top-left-radius: 10px;
+            border-top-left-radius: 16px;
         }
         
         .table th:last-child {
-            border-top-right-radius: 10px;
+            border-top-right-radius: 16px;
         }
         
         .table td {
             vertical-align: middle;
+            padding: 15px 12px;
+            border-bottom: 1px solid #f0f4f8;
+            background: #fff;
+            font-size: 1rem;
         }
         
-        .table tr:hover {
-            background-color: #f8f9fa;
+        .table tbody tr:nth-child(even) td {
+            background: #f8fcfd;
+        }
+        
+        .table tr:hover td {
+            background: #e8f7f9;
+            transition: background 0.2s;
         }
         
         .btn-action {
-            padding: 5px 10px;
+            padding: 7px 14px;
             margin: 0 2px;
-            border-radius: 5px;
-            min-width: 36px;
+            border-radius: 12px;
+            min-width: 38px;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(66,195,207,0.08);
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-action.btn-warning {
+            background: #ffe082;
+            color: #856404;
+            border: none;
+        }
+        
+        .btn-action.btn-warning:hover {
+            background: #ffd54f;
+            color: #6d4c00;
+        }
+        
+        .btn-action.btn-danger {
+            background: #ffb3b3;
+            color: #b71c1c;
+            border: none;
+        }
+        
+        .btn-action.btn-danger:hover {
+            background: #ff5252;
+            color: #fff;
         }
         
         .btn-add-customer {
-            background-color: #42c3cf;
-            color: white;
+            background: linear-gradient(90deg, #42c3cf 0%, #36b5c0 100%);
+            color: #fff;
             border-radius: 40px;
-            padding: 20px 25px;
-            font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(66, 195, 207, 0.3);
-            transition: all 0.3s ease;
+            padding: 22px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            box-shadow: 0 6px 18px rgba(66,195,207,0.18);
+            transition: all 0.2s;
+            border: none;
         }
         
         .btn-add-customer:hover {
-            background-color: #38adb8;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(66, 195, 207, 0.4);
-            color: white;
+            background: #36b5c0;
+            color: #fff;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 10px 24px rgba(66,195,207,0.22);
         }
         
         .btn-add-customer i {
@@ -448,25 +491,25 @@ if (isset($_GET['ajax_search'])) {
         
         /* Mobile card view styles */
         .customer-card {
-            border: 1px solid #dee2e6;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            border: 1px solid #e0f2f1;
+            border-radius: 16px;
+            margin-bottom: 18px;
             overflow: hidden;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(66,195,207,0.07);
         }
         
         .customer-card-header {
-            background-color: #42c3cf;
-            padding: 10px 15px;
-            border-bottom: 1px solid #dee2e6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
+            background: linear-gradient(90deg, #42c3cf 0%, #36b5c0 100%);
+            padding: 12px 18px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #e0f2f1;
         }
         
         .customer-card-body {
-            padding: 15px;
+            padding: 18px 18px 10px 18px;
         }
         
         .customer-card-item {
@@ -487,11 +530,11 @@ if (isset($_GET['ajax_search'])) {
         
         .customer-card-footer {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             gap: 10px;
-            padding: 10px 15px;
-            background-color: #f8f9fa;
-            border-top: 1px solid #dee2e6;
+            padding: 12px 18px;
+            background: #f8fcfd;
+            border-top: 1px solid #e0f2f1;
         }
         
         /* Estilos para el botón de filtro móvil */
@@ -563,11 +606,12 @@ if (isset($_GET['ajax_search'])) {
         .active-filter-badge {
             display: inline-flex;
             align-items: center;
-            background-color: #e9ecef;
+            background-color: #e8f7f9;
             border-radius: 20px;
             padding: 3px 10px;
             font-size: 0.75rem;
-            color: #495057;
+            color: #42c3cf;
+            font-weight: 600;
         }
         
         .active-filter-badge i {
@@ -627,6 +671,9 @@ if (isset($_GET['ajax_search'])) {
                 flex: 1;
                 text-align: center;
             }
+            .modal-dialog {
+                margin-top: 60px !important;
+            }
         }
         
         @media (min-width: 769px) {
@@ -649,20 +696,21 @@ if (isset($_GET['ajax_search'])) {
         
         /* Alert styles */
         .alert {
-            border-radius: 10px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            padding: 16px 18px;
+            box-shadow: 0 2px 8px rgba(66,195,207,0.07);
         }
         
         /* Modal styles */
         .modal-content {
-            border-radius: 15px;
-            border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(66,195,207,0.13);
         }
         
         .modal-header {
-            background-color: #42c3cf;
-            color: white;
+            background-color: #42c3cf !important;
+            color: #fff !important;
             border-top-left-radius: 15px;
             border-top-right-radius: 15px;
             border-bottom: none;
@@ -675,6 +723,26 @@ if (isset($_GET['ajax_search'])) {
         .form-label {
             font-weight: 500;
             color: #495057;
+        }
+        .form-control {
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(66,195,207,0.07);
+            padding: 12px 14px;
+            font-size: 1rem;
+            border: 1px solid #e0f2f1;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+        .form-control:focus {
+            border-color: #42c3cf;
+            box-shadow: 0 2px 8px rgba(66,195,207,0.13);
+        }
+        .badge {
+            border-radius: 10px;
+            font-size: 0.95rem;
+            padding: 6px 12px;
+            background: #e8f7f9;
+            color: #42c3cf;
+            font-weight: 600;
         }
     </style>
 </head>

@@ -553,6 +553,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             align-items: center;
             gap: 8px;
         }
+
+        .login-footer-link2 {
+            font-size: 12px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 100;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
         
         .login-footer-link:hover {
             color: var(--primary-dark);
@@ -768,6 +779,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <p class="login-footer-text">Bukan admin?</p>
                 <a href="../pelanggan/" class="login-footer-link">
                     ke halaman pelanggan <i class="fas fa-arrow-right"></i>
+                </a><br>
+                <a href="../" class="login-footer-link2">
+                    ke halaman utama <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>

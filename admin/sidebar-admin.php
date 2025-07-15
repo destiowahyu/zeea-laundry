@@ -1,19 +1,29 @@
 <?php
+// Pastikan session sudah dimulai di file utama (profil.php)
 // Ambil data admin dari sesi
-$adminName = $_SESSION['username'];
+$adminName = $_SESSION['username'] ?? "Guest"; // Default jika session username tidak ada
 
 // Ambil data admin dari database
-$adminQuery = $conn->prepare("SELECT id, username, foto_profil FROM admin WHERE username = ?");
-$adminQuery->bind_param("s", $adminName);
-$adminQuery->execute();
-$adminResult = $adminQuery->get_result();
-$adminData = $adminResult->fetch_assoc();
+// Pastikan $conn sudah terdefinisi dari include '../includes/db.php'; di file utama
+$adminData = null;
+if (isset($conn) && $conn instanceof mysqli) { // Cek apakah $conn ada dan merupakan objek mysqli
+    $adminQuery = $conn->prepare("SELECT id, username, foto_profil FROM admin WHERE username = ?");
+    if ($adminQuery) {
+        $adminQuery->bind_param("s", $adminName);
+        $adminQuery->execute();
+        $adminResult = $adminQuery->get_result();
+        $adminData = $adminResult->fetch_assoc();
+    } else {
+        // Handle error jika prepare gagal
+        error_log("Failed to prepare admin query in sidebar-admin.php: " . $conn->error);
+    }
+} else {
+    // Handle error jika $conn tidak terdefinisi atau bukan objek mysqli
+    error_log("Database connection (\$conn) not available in sidebar-admin.php");
+}
+
 $namaAdmin = $adminData['username'] ?? "Tidak Ditemukan";
-
-
-// Ambil ID admin dan username dari session
-$adminId = $_SESSION['id'] ?? $adminData['id'];
-$adminUsername = $_SESSION['username'];
+$adminId = $_SESSION['id'] ?? ($adminData['id'] ?? null);
 $adminFoto = $adminData['foto_profil'] ?? null;
 ?>
 
