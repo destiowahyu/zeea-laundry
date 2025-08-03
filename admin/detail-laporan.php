@@ -23,7 +23,6 @@ $query = "SELECT
     p.status,
     p.status_pembayaran,
     p.waktu,
-    p.harga_custom,
     pl.nama as nama_pelanggan,
     pl.no_hp,
     pk.nama as nama_paket,
@@ -32,7 +31,7 @@ $query = "SELECT
     aj.layanan as layanan_antar_jemput,
     aj.alamat_antar,
     aj.alamat_jemput,
-    aj.harga_custom as harga_antar_jemput,
+    aj.harga as harga,
     aj.status as status_antar_jemput,
     aj.waktu_antar,
     aj.waktu_jemput
@@ -84,7 +83,7 @@ while ($item = $result_all->fetch_assoc()) {
 $total_harga = $total_laundry;
 $harga_antar_jemput = 0;
 if (!empty($pesanan['layanan_antar_jemput'])) {
-    $harga_antar_jemput = $pesanan['harga_antar_jemput'] ?? 5000;
+    $harga_antar_jemput = $pesanan['harga'] ?? 5000;
     $total_harga += $harga_antar_jemput;
 }
 

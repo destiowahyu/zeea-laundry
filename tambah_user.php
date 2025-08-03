@@ -2,8 +2,8 @@
 require 'includes/db.php'; 
 
 // Username dan Password
-$username = 'destiowahyu';
-$password = 'destiowahyu';
+$username = 'oke';
+$password = 'oke';
 
 
 $hashed_password = password_hash($password, PASSWORD_BCRYPT);

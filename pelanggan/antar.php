@@ -85,120 +85,125 @@ if (isset($_POST['request_delivery'])) {
     $trackingCodeInput = trim($_POST['tracking_code']);
     $name = trim($_POST['delivery_name']);
     $phone = trim($_POST['delivery_phone']);
-    // Format phone number to ensure it starts with +62
-    if (substr($phone, 0, 1) === '0') {
-        $phone = '+62' . substr($phone, 1);
-    }
+    // Validasi nomor HP (server-side)
+    $phone_digits = preg_replace('/[^0-9]/', '', $phone);
+    if (strlen($phone_digits) < 10 || strlen($phone_digits) > 15) {
+        $deliveryMessage = "Nomor telepon harus 10-15 digit angka.";
+    } else {
+        // Format phone number to ensure it starts with +62
+        if (substr($phone, 0, 1) === '0') {
+            $phone = '+62' . substr($phone, 1);
+        }
+        $address = trim($_POST['delivery_address']);
+        $delivery_time = $_POST['delivery_time'];
+        $notes = trim($_POST['delivery_notes']);
 
-    $address = trim($_POST['delivery_address']);
-    $delivery_time = $_POST['delivery_time'];
-    $notes = trim($_POST['delivery_notes']);
-
-    // Check if delivery time is after 17:00
-    $deliveryDateTime = new DateTime($delivery_time);
-    $cutoffTime = clone $deliveryDateTime;
-    $cutoffTime->setTime(17, 0, 0);
-    
-    if ($deliveryDateTime > $cutoffTime) {
-        // If after 17:00, set to next day at 10:00
-        $deliveryDateTime->modify('+1 day');
-        $deliveryDateTime->setTime(10, 0, 0);
-        $delivery_time = $deliveryDateTime->format('Y-m-d H:i:s');
-        $deliveryMessage = "Waktu pengantaran yang Anda pilih melebihi batas waktu (17:00). Pesanan Anda akan diantar besok pukul 10:00.";
-    }
-
-    // Verify the tracking code and check if order is completed
-    $query = "SELECT p.*, pk.nama as nama_paket, pk.harga as harga_per_kg, pl.nama as nama_pelanggan, pl.no_hp as telepon, pl.id as customer_id
-             FROM pesanan p 
-             JOIN paket pk ON p.id_paket = pk.id 
-             JOIN pelanggan pl ON p.id_pelanggan = pl.id 
-             WHERE p.tracking_code = ? AND p.status = 'selesai'";
-
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $trackingCodeInput);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        // Get the first order for customer details
-        $orderDetails = $result->fetch_assoc();
-        $customerId = $orderDetails['customer_id'];
+        // Check if delivery time is after 17:00
+        $deliveryDateTime = new DateTime($delivery_time);
+        $cutoffTime = clone $deliveryDateTime;
+        $cutoffTime->setTime(17, 0, 0);
         
-        // Reset the result pointer
-        $result->data_seek(0);
-        
-        // Store all order items
-        $orderItems = [];
-        $totalHarga = 0;
-        while ($item = $result->fetch_assoc()) {
-            $orderItems[] = $item;
-            $totalHarga += $item['harga'];
+        if ($deliveryDateTime > $cutoffTime) {
+            // If after 17:00, set to next day at 10:00
+            $deliveryDateTime->modify('+1 day');
+            $deliveryDateTime->setTime(10, 0, 0);
+            $delivery_time = $deliveryDateTime->format('Y-m-d H:i:s');
+            $deliveryMessage = "Waktu pengantaran yang Anda pilih melebihi batas waktu (17:00). Pesanan Anda akan diantar besok pukul 10:00.";
         }
 
-        // Check if customer exists and update if needed
-        $stmt = $conn->prepare("SELECT id FROM pelanggan WHERE no_hp = ?");
-        $stmt->bind_param("s", $phone);
+        // Verify the tracking code and check if order is completed
+        $query = "SELECT p.*, pk.nama as nama_paket, pk.harga as harga_per_kg, pl.nama as nama_pelanggan, pl.no_hp as telepon, pl.id as customer_id
+                 FROM pesanan p 
+                 JOIN paket pk ON p.id_paket = pk.id 
+                 JOIN pelanggan pl ON p.id_pelanggan = pl.id 
+                 WHERE p.tracking_code = ? AND p.status = 'selesai'";
+
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $trackingCodeInput);
         $stmt->execute();
-        $phoneResult = $stmt->get_result();
+        $result = $stmt->get_result();
 
-        if ($phoneResult->num_rows > 0) {
-            $phoneCustomer = $phoneResult->fetch_assoc();
-            $phoneCustomerId = $phoneCustomer['id'];
+        if ($result->num_rows > 0) {
+            // Get the first order for customer details
+            $orderDetails = $result->fetch_assoc();
+            $customerId = $orderDetails['customer_id'];
             
-            // Update customer name if it's different
-            $stmt = $conn->prepare("UPDATE pelanggan SET nama = ? WHERE id = ?");
-            $stmt->bind_param("si", $name, $phoneCustomerId);
-            $stmt->execute();
+            // Reset the result pointer
+            $result->data_seek(0);
             
-            // Use the customer ID from phone number
-            $customerId = $phoneCustomerId;
-        } else {
-            // Create new customer with the phone number
-            $stmt = $conn->prepare("INSERT INTO pelanggan (no_hp, nama) VALUES (?, ?)");
-            $stmt->bind_param("ss", $phone, $name);
-            
-            if ($stmt->execute()) {
-                $customerId = $conn->insert_id;
-            } else {
-                $deliveryMessage = "Gagal mendaftarkan pelanggan baru. Silakan coba lagi.";
+            // Store all order items
+            $orderItems = [];
+            $totalHarga = 0;
+            while ($item = $result->fetch_assoc()) {
+                $orderItems[] = $item;
+                $totalHarga += $item['harga'];
             }
-        }
 
-        if ($customerId > 0) {
-            // Check if delivery request already exists for this tracking code
-            $checkExistingQuery = "SELECT aj.id FROM antar_jemput aj 
-                                  JOIN pesanan p ON aj.id_pesanan = p.id 
-                                  WHERE p.tracking_code = ? AND aj.layanan = 'antar' AND aj.deleted_at IS NULL";
-            $checkStmt = $conn->prepare($checkExistingQuery);
-            $checkStmt->bind_param("s", $trackingCodeInput);
-            $checkStmt->execute();
-            $existingResult = $checkStmt->get_result();
-            
-            if ($existingResult->num_rows > 0) {
-                $deliveryMessage = "Pesanan dengan kode tracking <strong>$trackingCodeInput</strong> sudah memiliki permintaan layanan antar. Silakan cek status layanan antar Anda.";
+            // Check if customer exists and update if needed
+            $stmt = $conn->prepare("SELECT id FROM pelanggan WHERE no_hp = ?");
+            $stmt->bind_param("s", $phone);
+            $stmt->execute();
+            $phoneResult = $stmt->get_result();
+
+            if ($phoneResult->num_rows > 0) {
+                $phoneCustomer = $phoneResult->fetch_assoc();
+                $phoneCustomerId = $phoneCustomer['id'];
+                
+                // Update customer name if it's different
+                $stmt = $conn->prepare("UPDATE pelanggan SET nama = ? WHERE id = ?");
+                $stmt->bind_param("si", $name, $phoneCustomerId);
+                $stmt->execute();
+                
+                // Use the customer ID from phone number
+                $customerId = $phoneCustomerId;
             } else {
-                // Insert delivery request with default price 5000
-                $stmt = $conn->prepare("INSERT INTO antar_jemput (id_pesanan, tracking_code, id_pelanggan, nama_pelanggan, no_hp, layanan, alamat_antar, status, waktu_antar, harga) VALUES (?, ?, ?, ?, ?, 'antar', ?, 'menunggu', ?, 5000.00)");
-                $stmt->bind_param("isissss", $orderDetails['id'], $orderDetails['tracking_code'], $customerId, $name, $phone, $address, $delivery_time);
+                // Create new customer with the phone number
+                $stmt = $conn->prepare("INSERT INTO pelanggan (no_hp, nama) VALUES (?, ?)");
+                $stmt->bind_param("ss", $phone, $name);
                 
                 if ($stmt->execute()) {
-                    $antarJemputId = $conn->insert_id;
-                    // Gunakan tracking code pesanan asli, bukan buat yang baru
-                    $trackingCode = $orderDetails['tracking_code'];
-                    
-                    if (empty($deliveryMessage)) {
-                        $deliveryMessage = "Permintaan pengantaran berhasil dikirim dengan kode tracking: <strong>$trackingCode</strong>. Tim kami akan mengantar cucian Anda sesuai jadwal.";
-                    } else {
-                        $deliveryMessage .= " Permintaan pengantaran berhasil dikirim dengan kode tracking: <strong>$trackingCode</strong>.";
-                    }
-                    $showPaymentInfo = true;
+                    $customerId = $conn->insert_id;
                 } else {
-                    $deliveryMessage = "Gagal mengirim permintaan. Silakan coba lagi. Error: " . $stmt->error;
+                    $deliveryMessage = "Gagal mendaftarkan pelanggan baru. Silakan coba lagi.";
                 }
             }
+
+            if ($customerId > 0) {
+                // Check if delivery request already exists for this tracking code
+                $checkExistingQuery = "SELECT aj.id FROM antar_jemput aj 
+                                      JOIN pesanan p ON aj.id_pesanan = p.id 
+                                      WHERE p.tracking_code = ? AND aj.layanan = 'antar' AND aj.deleted_at IS NULL";
+                $checkStmt = $conn->prepare($checkExistingQuery);
+                $checkStmt->bind_param("s", $trackingCodeInput);
+                $checkStmt->execute();
+                $existingResult = $checkStmt->get_result();
+                
+                if ($existingResult->num_rows > 0) {
+                    $deliveryMessage = "Pesanan dengan kode tracking <strong>$trackingCodeInput</strong> sudah memiliki permintaan layanan antar. Silakan cek status layanan antar Anda.";
+                } else {
+                    // Insert delivery request with default price 5000
+                    $stmt = $conn->prepare("INSERT INTO antar_jemput (id_pesanan, tracking_code, id_pelanggan, nama_pelanggan, no_hp, layanan, alamat_antar, status, waktu_antar, harga) VALUES (?, ?, ?, ?, ?, 'antar', ?, 'menunggu', ?, 5000.00)");
+                    $stmt->bind_param("isissss", $orderDetails['id'], $orderDetails['tracking_code'], $customerId, $name, $phone, $address, $delivery_time);
+                    
+                    if ($stmt->execute()) {
+                        $antarJemputId = $conn->insert_id;
+                        // Gunakan tracking code pesanan asli, bukan buat yang baru
+                        $trackingCode = $orderDetails['tracking_code'];
+                        
+                        if (empty($deliveryMessage)) {
+                            $deliveryMessage = "Permintaan pengantaran berhasil dikirim dengan kode tracking: <strong>$trackingCode</strong>. Tim kami akan mengantar cucian Anda sesuai jadwal.";
+                        } else {
+                            $deliveryMessage .= " Permintaan pengantaran berhasil dikirim dengan kode tracking: <strong>$trackingCode</strong>.";
+                        }
+                        $showPaymentInfo = true;
+                    } else {
+                        $deliveryMessage = "Gagal mengirim permintaan. Silakan coba lagi. Error: " . $stmt->error;
+                    }
+                }
+            }
+        } else {
+            $deliveryMessage = "Kode tracking tidak ditemukan atau pesanan belum selesai. Pastikan kode tracking benar dan pesanan sudah selesai.";
         }
-    } else {
-        $deliveryMessage = "Kode tracking tidak ditemukan atau pesanan belum selesai. Pastikan kode tracking benar dan pesanan sudah selesai.";
     }
 }
 ?>
@@ -1334,6 +1339,19 @@ if (isset($_POST['request_delivery'])) {
                 trackingInput.value = code;
                 submitBtn.disabled = false;
                 submitBtn.click();
+            }
+        });
+
+        // Validasi nomor HP sebelum submit
+        document.getElementById('deliveryForm')?.addEventListener('submit', function(e) {
+            const phoneInput = document.getElementById('delivery_phone');
+            const phone = phoneInput.value.trim();
+            const phoneDigits = phone.replace(/[^0-9]/g, '');
+            if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+                e.preventDefault();
+                showTrackingAlert('Nomor telepon harus 10-15 digit angka.');
+                phoneInput.focus();
+                return false;
             }
         });
     </script>

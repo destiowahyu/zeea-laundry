@@ -82,12 +82,12 @@ switch ($_SESSION['role']) {
     <div class="splash-container">
         <img src="assets/images/zeea_laundry.png" alt="Logo" class="logo">
         <div class="loading"></div>
-        <div class="author">© Destio Wahyu. All Rights Reserved.</div>
+        <div class="author">PLIS JANGAN DI ANEH ANEHIN NIH APLIKASI HUHUHU</div>
     </div>
     <script>
         setTimeout(function() {
             window.location.href = '<?php echo $redirect; ?>';
-        }, 600);
+        }, 4500);
     </script>
 </body>
 </html>

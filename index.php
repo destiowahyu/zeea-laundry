@@ -22,7 +22,7 @@ if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zeea Laundry - Rapi, Bersih, Wangi</title>
-    <link rel="icon" type="image/png" href="assets/images/zeea_laundry.png">
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2161,7 +2161,7 @@ if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
                 <div class="col-lg-6">
                     <div class="hero-image">
                         <div class="hero-shape shape-1"></div>
-                        <img src="assets/images/hero.png" alt="Zeea Laundry Service" class="img-fluid">
+                        <img src="assets/images/hero.webp" alt="Zeea Laundry Service" class="img-fluid">
                         <div class="hero-shape shape-2"></div>
                     </div>
                 </div>
@@ -2522,7 +2522,7 @@ if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
             <div class="row">
                 <div class="col-lg-4 col-md-6 footer-col">
                     <div class="footer-logo">
-                        <img src="assets/images/zeea_laundry.png" alt="Zeea Laundry Logo">
+                        <img src="assets/images/favicon.png" alt="Zeea Laundry Logo">
                         <span>Zeea Laundry</span>
                     </div>
                     <p class="footer-text">Zeea Laundry adalah penyedia jasa laundry profesional yang berkomitmen memberikan layanan terbaik untuk semua kebutuhan laundry Anda.</p>

@@ -19,67 +19,88 @@ $stmt->execute();
 $adminData = $stmt->get_result()->fetch_assoc();
 $namaAdmin = $adminData['username'] ?? "Tidak Ditemukan";
 
-// Fetch jumlah pesanan hari ini
-$stmt = $conn->prepare("SELECT COUNT(*) AS total FROM pesanan WHERE DATE(waktu) = CURDATE()");
-$stmt->execute();
-$pesananHariIni = $stmt->get_result()->fetch_assoc()['total'];
-
-// Fetch jumlah pesanan yang sudah selesai
-$stmt = $conn->prepare("SELECT COUNT(*) AS total FROM pesanan WHERE status = 'selesai' AND DATE(waktu) = CURDATE()");
-$stmt->execute();
-$pesananSelesai = $stmt->get_result()->fetch_assoc()['total'];
-
-// Fetch total pemasukan hari ini - sesuai laporan pemasukan
-// Dari pesanan
-$stmt = $conn->prepare("SELECT COALESCE(SUM(harga), 0) AS total FROM pesanan WHERE DATE(waktu) = CURDATE() AND status_pembayaran = 'sudah_dibayar' AND deleted_at IS NULL");
-$stmt->execute();
-$pemasukanPesananHariIni = $stmt->get_result()->fetch_assoc()['total'];
-
-// Dari antar_jemput (status selesai, belum dihapus, tanggal selesai/antar/jemput hari ini)
-$stmt = $conn->prepare("SELECT COALESCE(SUM(COALESCE(harga, 5000)), 0) AS total FROM antar_jemput WHERE status = 'selesai' AND deleted_at IS NULL AND DATE(COALESCE(selesai_at, COALESCE(waktu_antar, waktu_jemput))) = CURDATE()");
-$stmt->execute();
-$pemasukanAntarJemputHariIni = $stmt->get_result()->fetch_assoc()['total'];
-
-$pemasukanHariIni = $pemasukanPesananHariIni + $pemasukanAntarJemputHariIni;
-// Pastikan nilai tidak null untuk number_format
-$pemasukanHariIni = $pemasukanHariIni ?? 0;
-
-// Fetch jumlah antar jemput menunggu
-$stmt = $conn->prepare("SELECT COUNT(*) AS total FROM antar_jemput WHERE status = 'menunggu' AND deleted_at IS NULL");
-$stmt->execute();
-$antarJemputMenunggu = $stmt->get_result()->fetch_assoc()['total'];
-
-// Get current store status - hanya ambil record dengan id = 1
-$storeStatusQuery = "SELECT status, waktu FROM toko_status WHERE id = 1 LIMIT 1";
-$storeStatusResult = $conn->query($storeStatusQuery);
-$storeStatus = "buka"; // Default status is open
-$statusTime = "";
-
-if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
-    $statusRow = $storeStatusResult->fetch_assoc();
-    $storeStatus = $statusRow['status'];
-    $statusTime = date('d/m/Y H:i', strtotime($statusRow['waktu']));
-} else {
-    // Jika belum ada record, buat record pertama
-    $stmt = $conn->prepare("INSERT INTO toko_status (id, status, waktu) VALUES (1, 'buka', NOW())");
+// --- QUERY DATA DASHBOARD (dibuat fungsi agar bisa dipakai AJAX) ---
+function get_dashboard_data($conn) {
+    // Fetch jumlah pesanan hari ini
+    $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM pesanan WHERE DATE(waktu) = CURDATE()");
     $stmt->execute();
-    $storeStatus = "buka";
-    $statusTime = date('d/m/Y H:i');
+    $pesananHariIni = $stmt->get_result()->fetch_assoc()['total'];
+
+    // Fetch jumlah pesanan yang sudah selesai
+    $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM pesanan WHERE status = 'selesai' AND DATE(waktu) = CURDATE()");
+    $stmt->execute();
+    $pesananSelesai = $stmt->get_result()->fetch_assoc()['total'];
+
+    // Fetch total pemasukan hari ini - sesuai laporan pemasukan
+    $stmt = $conn->prepare("SELECT COALESCE(SUM(harga), 0) AS total FROM pesanan WHERE DATE(waktu) = CURDATE() AND status_pembayaran = 'sudah_dibayar' AND deleted_at IS NULL");
+    $stmt->execute();
+    $pemasukanPesananHariIni = $stmt->get_result()->fetch_assoc()['total'];
+
+    $stmt = $conn->prepare("SELECT COALESCE(SUM(COALESCE(harga, 5000)), 0) AS total FROM antar_jemput WHERE status = 'selesai' AND deleted_at IS NULL AND DATE(COALESCE(selesai_at, COALESCE(waktu_antar, waktu_jemput))) = CURDATE()");
+    $stmt->execute();
+    $pemasukanAntarJemputHariIni = $stmt->get_result()->fetch_assoc()['total'];
+
+    $pemasukanHariIni = $pemasukanPesananHariIni + $pemasukanAntarJemputHariIni;
+    $pemasukanHariIni = $pemasukanHariIni ?? 0;
+
+    // Fetch jumlah antar jemput menunggu
+    $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM antar_jemput WHERE status = 'menunggu' AND deleted_at IS NULL");
+    $stmt->execute();
+    $antarJemputMenunggu = $stmt->get_result()->fetch_assoc()['total'];
+
+    // Get current store status - hanya ambil record dengan id = 1
+    $storeStatusQuery = "SELECT status, waktu FROM toko_status WHERE id = 1 LIMIT 1";
+    $storeStatusResult = $conn->query($storeStatusQuery);
+    $storeStatus = "buka"; // Default status is open
+    $statusTime = "";
+    if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
+        $statusRow = $storeStatusResult->fetch_assoc();
+        $storeStatus = $statusRow['status'];
+        $statusTime = date('d/m/Y H:i', strtotime($statusRow['waktu']));
+    } else {
+        // Jika belum ada record, buat record pertama
+        $stmt = $conn->prepare("INSERT INTO toko_status (id, status, waktu) VALUES (1, 'buka', NOW())");
+        $stmt->execute();
+        $storeStatus = "buka";
+        $statusTime = date('d/m/Y H:i');
+    }
+    return [
+        'pesananHariIni' => $pesananHariIni,
+        'pesananSelesai' => $pesananSelesai,
+        'pemasukanHariIni' => $pemasukanHariIni,
+        'antarJemputMenunggu' => $antarJemputMenunggu,
+        'storeStatus' => $storeStatus,
+        'statusTime' => $statusTime
+    ];
 }
+
+// --- ENDPOINT UNTUK AJAX ---
+if (isset($_GET['ajax_dashboard'])) {
+    header('Content-Type: application/json');
+    $data = get_dashboard_data($conn);
+    // Format pemasukan
+    $data['pemasukanHariIniFormatted'] = "Rp " . number_format((float)$data['pemasukanHariIni'], 0, ',', '.');
+    echo json_encode($data);
+    exit();
+}
+
+// --- DATA UTAMA UNTUK PERTAMA KALI LOAD ---
+$dashboardData = get_dashboard_data($conn);
+$pesananHariIni = $dashboardData['pesananHariIni'];
+$pesananSelesai = $dashboardData['pesananSelesai'];
+$pemasukanHariIni = $dashboardData['pemasukanHariIni'];
+$antarJemputMenunggu = $dashboardData['antarJemputMenunggu'];
+$storeStatus = $dashboardData['storeStatus'];
+$statusTime = $dashboardData['statusTime'];
 
 // Process store status update
 if (isset($_POST['update_status'])) {
     $status = $_POST['update_status'];
-    
-    // Update existing record instead of inserting new one
     $stmt = $conn->prepare("UPDATE toko_status SET status = ?, waktu = NOW() WHERE id = 1");
     $stmt->bind_param("s", $status);
-    
     if ($stmt->execute()) {
         $statusMessage = "Status toko berhasil diperbarui.";
         $statusMessageType = "success";
-        
-        // Update the current status
         $storeStatus = $status;
         $statusTime = date('d/m/Y H:i');
     } else {
@@ -87,8 +108,6 @@ if (isset($_POST['update_status'])) {
         $statusMessageType = "danger";
     }
 }
-
-$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -398,7 +417,7 @@ $stmt->close();
                             <div class="card-dashboard h-100">
                                 <i class="fas fa-box"></i>
                                 <h5>Pesanan Hari Ini</h5>
-                                <p><?= $pesananHariIni ?></p>
+                                <p id="pesanan-hari-ini"><?= $pesananHariIni ?></p>
                             </div>
                         </a>
                     </div>
@@ -407,7 +426,7 @@ $stmt->close();
                             <div class="card-dashboard h-100">
                                 <i class="fas fa-check-circle"></i>
                                 <h5>Pesanan Selesai</h5>
-                                <p><?= $pesananSelesai ?></p>
+                                <p id="pesanan-selesai"><?= $pesananSelesai ?></p>
                             </div>
                         </a>
                     </div>
@@ -416,7 +435,7 @@ $stmt->close();
                             <div class="card-dashboard h-100">
                                 <i class="fas fa-wallet"></i>
                                 <h5>Pemasukan Hari Ini</h5>
-                                <p><?= "Rp " . number_format((float)$pemasukanHariIni, 0, ',', '.') ?></p>
+                                <p id="pemasukan-hari-ini"><?= "Rp " . number_format((float)$pemasukanHariIni, 0, ',', '.') ?></p>
                             </div>
                         </a>
                     </div>
@@ -425,7 +444,7 @@ $stmt->close();
                             <div class="card-dashboard h-100">
                                 <i class="fas fa-truck"></i>
                                 <h5>Antar Jemput Menunggu</h5>
-                                <p><?= $antarJemputMenunggu ?></p>
+                                <p id="antar-jemput-menunggu"><?= $antarJemputMenunggu ?></p>
                             </div>
                         </a>
                     </div>
@@ -437,6 +456,87 @@ $stmt->close();
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+    #dashboard-loading {
+        position: fixed;
+        top: 20px;
+        right: 30px;
+        z-index: 9999;
+        display: none;
+    }
+    .spinner-border {
+        width: 1.5rem;
+        height: 1.5rem;
+        border-width: 0.2em;
+    }
+    </style>
+    <div id="dashboard-loading">
+        <div class="spinner-border text-info" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <script>
+let dashboardInterval = null;
+let isTabActive = true;
 
+function updateDashboard() {
+    $('#dashboard-loading').show();
+    $.getJSON('index.php?ajax_dashboard=1', function(data) {
+        $('#pesanan-hari-ini').text(data.pesananHariIni);
+        $('#pesanan-selesai').text(data.pesananSelesai);
+        $('#pemasukan-hari-ini').text(data.pemasukanHariIniFormatted);
+        $('#antar-jemput-menunggu').text(data.antarJemputMenunggu);
+        // Update status toko
+        var statusText = data.storeStatus === 'buka' ? 'BUKA' : 'TUTUP';
+        var statusClass = data.storeStatus === 'buka' ? 'open' : 'closed';
+        var indicatorClass = data.storeStatus === 'buka' ? 'status-open' : 'status-closed';
+        $('.current-status').removeClass('open closed').addClass(statusClass);
+        $('.status-indicator').removeClass('status-open status-closed').addClass(indicatorClass);
+        $('.status-text').text('Toko sedang ' + statusText);
+        if (data.statusTime) {
+            $('.status-time').html('<i class="far fa-clock me-1"></i> Diperbarui: ' + data.statusTime);
+        }
+        // Disable/enable tombol
+        if (data.storeStatus === 'buka') {
+            $('.open-btn').attr('disabled', true);
+            $('.close-btn').attr('disabled', false);
+        } else {
+            $('.open-btn').attr('disabled', false);
+            $('.close-btn').attr('disabled', true);
+        }
+    }).always(function() {
+        $('#dashboard-loading').hide();
+    });
+}
+
+function startDashboardPolling() {
+    if (!dashboardInterval) {
+        dashboardInterval = setInterval(function() {
+            if (isTabActive) updateDashboard();
+        }, 1000); // 1 detik
+    }
+}
+function stopDashboardPolling() {
+    if (dashboardInterval) {
+        clearInterval(dashboardInterval);
+        dashboardInterval = null;
+    }
+}
+// Tab visibility API
+$(document).ready(function() {
+    document.addEventListener('visibilitychange', function() {
+        isTabActive = !document.hidden;
+        if (isTabActive) {
+            updateDashboard();
+            startDashboardPolling();
+        } else {
+            stopDashboardPolling();
+        }
+    });
+    // Mulai polling saat halaman siap
+    updateDashboard();
+    startDashboardPolling();
+});
+</script>
 </body>
 </html>

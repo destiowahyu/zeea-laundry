@@ -1,4 +1,4 @@
-# CARA MENJALANKAN (kalau pake mysql, kalau pake laragon ya intinya sama aja sih)
+# CARA MENJALANKAN (kalau pake XAMPP, kalau pake laragon ya intinya sama aja sih)
 1. Nyalakan **Apache** dan **MySQL** pada xampp. jika menggunakan aplikasi lain dapat di sesuaikan
 2. Lakukan git clone dengan cara masuk ke folder `xampp/htdocs` lalu klik kanan, pilih _**gitbash here**_ **atau** klik kanan, pilih _**open in terminal**_ (Pastikan gitbash sudah terinstall)
 3. Ketikan di terminal :

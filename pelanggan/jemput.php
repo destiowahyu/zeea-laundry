@@ -30,79 +30,85 @@ if ($storeStatusResult && $storeStatusResult->num_rows > 0) {
 if (isset($_POST['request_pickup'])) {
     $name = trim($_POST['pickup_name']);
     $phone = trim($_POST['pickup_phone']);
-    // Format phone number to ensure it starts with +62
-    if (substr($phone, 0, 1) === '0') {
-        $phone = '+62' . substr($phone, 1);
-    }
-
-    $address = trim($_POST['pickup_address']);
-    $pickup_time = $_POST['pickup_time'];
-    $notes = trim($_POST['pickup_notes']);
-
-    // Check if pickup time is after 17:00
-    $pickupDateTime = new DateTime($pickup_time);
-    $cutoffTime = clone $pickupDateTime;
-    $cutoffTime->setTime(17, 0, 0);
-    
-    if ($pickupDateTime > $cutoffTime) {
-        // If after 17:00, set to next day at 10:00
-        $pickupDateTime->modify('+1 day');
-        $pickupDateTime->setTime(10, 0, 0);
-        $pickup_time = $pickupDateTime->format('Y-m-d H:i:s');
-        $pickupMessage = "Waktu penjemputan yang Anda pilih melebihi batas waktu (17:00). Pesanan Anda akan dijemput besok pukul 10:00.";
-    }
-
-    // Check if customer exists
-    $stmt = $conn->prepare("SELECT id FROM pelanggan WHERE no_hp = ?");
-    $stmt->bind_param("s", $phone);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    $customerId = 0;
-
-    if ($result->num_rows > 0) {
-        $customer = $result->fetch_assoc();
-        $customerId = $customer['id'];
-        
-        // Update customer name if it's different
-        $stmt = $conn->prepare("UPDATE pelanggan SET nama = ? WHERE id = ?");
-        $stmt->bind_param("si", $name, $customerId);
-        $stmt->execute();
+    // Validasi nomor HP (server-side)
+    $phone_digits = preg_replace('/[^0-9]/', '', $phone);
+    if (!preg_match('/^\+?[0-9]+$/', $phone) || strlen($phone_digits) < 10 || strlen($phone_digits) > 13) {
+        $pickupMessage = "Nomor telepon harus 10-13 digit angka dan hanya boleh berisi angka.";
     } else {
-        // Create new customer
-        $stmt = $conn->prepare("INSERT INTO pelanggan (no_hp, nama) VALUES (?, ?)");
-        $stmt->bind_param("ss", $phone, $name);
-        
-        if ($stmt->execute()) {
-            $customerId = $conn->insert_id;
-        } else {
-            $pickupMessage = "Gagal mendaftarkan pelanggan baru. Silakan coba lagi.";
+        // Format phone number to ensure it starts with +62
+        if (substr($phone, 0, 1) === '0') {
+            $phone = '+62' . substr($phone, 1);
         }
-    }
 
-    if ($customerId > 0) {
-        // Insert pickup request with customer ID, name, and default price 5000
-        $stmt = $conn->prepare("INSERT INTO antar_jemput (id_pesanan, id_pelanggan, nama_pelanggan, layanan, alamat_jemput, status, waktu_jemput, harga) VALUES (NULL, ?, ?, 'jemput', ?, 'menunggu', ?, 5000.00)");
-        $stmt->bind_param("isss", $customerId, $name, $address, $pickup_time);
+        $address = trim($_POST['pickup_address']);
+        $pickup_time = $_POST['pickup_time'];
+        $notes = trim($_POST['pickup_notes']);
+
+        // Check if pickup time is after 17:00
+        $pickupDateTime = new DateTime($pickup_time);
+        $cutoffTime = clone $pickupDateTime;
+        $cutoffTime->setTime(17, 0, 0);
         
-        if ($stmt->execute()) {
-            $antarJemputId = $conn->insert_id;
-            // Generate tracking code for antar-jemput service
-            $trackingCode = 'AJ-' . str_pad($antarJemputId, 6, '0', STR_PAD_LEFT);
+        if ($pickupDateTime > $cutoffTime) {
+            // If after 17:00, set to next day at 10:00
+            $pickupDateTime->modify('+1 day');
+            $pickupDateTime->setTime(10, 0, 0);
+            $pickup_time = $pickupDateTime->format('Y-m-d H:i:s');
+            $pickupMessage = "Waktu penjemputan yang Anda pilih melebihi batas waktu (17:00). Pesanan Anda akan dijemput besok pukul 10:00.";
+        }
+
+        // Check if customer exists
+        $stmt = $conn->prepare("SELECT id FROM pelanggan WHERE no_hp = ?");
+        $stmt->bind_param("s", $phone);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $customerId = 0;
+
+        if ($result->num_rows > 0) {
+            $customer = $result->fetch_assoc();
+            $customerId = $customer['id'];
             
-            // Update the tracking code in the database
-            $updateStmt = $conn->prepare("UPDATE antar_jemput SET tracking_code = ? WHERE id = ?");
-            $updateStmt->bind_param("si", $trackingCode, $antarJemputId);
-            $updateStmt->execute();
-            
-            if (empty($pickupMessage)) {
-                $pickupMessage = "Permintaan penjemputan berhasil dikirim dengan kode tracking: <strong>$trackingCode</strong>. Tim kami akan menjemput cucian Anda sesuai jadwal.";
-            } else {
-                $pickupMessage .= " Permintaan penjemputan berhasil dikirim dengan kode tracking: <strong>$trackingCode</strong>.";
-            }
-            $showPaymentInfo = true;
+            // Update customer name if it's different
+            $stmt = $conn->prepare("UPDATE pelanggan SET nama = ? WHERE id = ?");
+            $stmt->bind_param("si", $name, $customerId);
+            $stmt->execute();
         } else {
-            $pickupMessage = "Gagal mengirim permintaan. Silakan coba lagi. Error: " . $stmt->error;
+            // Create new customer
+            $stmt = $conn->prepare("INSERT INTO pelanggan (no_hp, nama) VALUES (?, ?)");
+            $stmt->bind_param("ss", $phone, $name);
+            
+            if ($stmt->execute()) {
+                $customerId = $conn->insert_id;
+            } else {
+                $pickupMessage = "Gagal mendaftarkan pelanggan baru. Silakan coba lagi.";
+            }
+        }
+
+        if ($customerId > 0) {
+            // Insert pickup request with customer ID, name, and default price 5000
+            $stmt = $conn->prepare("INSERT INTO antar_jemput (id_pesanan, id_pelanggan, nama_pelanggan, layanan, alamat_jemput, status, waktu_jemput, harga) VALUES (NULL, ?, ?, 'jemput', ?, 'menunggu', ?, 5000.00)");
+            $stmt->bind_param("isss", $customerId, $name, $address, $pickup_time);
+            
+            if ($stmt->execute()) {
+                $antarJemputId = $conn->insert_id;
+                // Generate tracking code for antar-jemput service
+                $trackingCode = 'AJ-' . str_pad($antarJemputId, 6, '0', STR_PAD_LEFT);
+                
+                // Update the tracking code in the database
+                $updateStmt = $conn->prepare("UPDATE antar_jemput SET tracking_code = ? WHERE id = ?");
+                $updateStmt->bind_param("si", $trackingCode, $antarJemputId);
+                $updateStmt->execute();
+                
+                if (empty($pickupMessage)) {
+                    $pickupMessage = "Permintaan penjemputan berhasil dikirim dengan kode tracking: <strong>$trackingCode</strong>. Tim kami akan menjemput cucian Anda sesuai jadwal.";
+                } else {
+                    $pickupMessage .= " Permintaan penjemputan berhasil dikirim dengan kode tracking: <strong>$trackingCode</strong>.";
+                }
+                $showPaymentInfo = true;
+            } else {
+                $pickupMessage = "Gagal mengirim permintaan. Silakan coba lagi. Error: " . $stmt->error;
+            }
         }
     }
 }
@@ -1088,6 +1094,54 @@ if (isset($_POST['request_pickup'])) {
                 pickupTimeInput.value = minDateTime;
             }
         });
+
+        // Modal popup custom untuk error
+        function showPickupModal(msg) {
+            let modal = document.getElementById('pickupModalAlert');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'pickupModalAlert';
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100vw';
+                modal.style.height = '100vh';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                modal.style.background = 'rgba(0,0,0,0.18)';
+                modal.style.zIndex = '9999';
+                modal.innerHTML = `<div style="background:#fff;min-width:280px;max-width:90vw;padding:24px 20px 18px 20px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;animation:fadeIn .2s;"><i class='fas fa-exclamation-circle' style='color:#dc3545;font-size:2.2rem;margin-bottom:10px;'></i><div style='font-size:1.05rem;color:#333;text-align:center;font-weight:500;'>${msg}</div></div>`;
+                document.body.appendChild(modal);
+            } else {
+                modal.style.display = 'flex';
+                modal.querySelector('div').children[1].innerHTML = msg;
+            }
+            setTimeout(() => {
+                if (modal) {
+                    modal.style.transition = 'opacity 0.4s';
+                    modal.style.opacity = '0';
+                    setTimeout(() => { modal.style.display = 'none'; modal.style.opacity = '1'; }, 400);
+                }
+            }, 2500);
+        }
+        document.getElementById('pickupForm')?.addEventListener('submit', function(e) {
+            const phoneInput = document.getElementById('pickup_phone');
+            const phone = phoneInput.value.trim();
+            const phoneDigits = phone.replace(/[^0-9]/g, '');
+            
+            if (!/^\+?[0-9]+$/.test(phone) || phoneDigits.length < 10 || phoneDigits.length > 13) {
+                e.preventDefault();
+                showPickupModal('Nomor telepon harus 10-13 digit angka dan hanya boleh berisi angka.');
+                phoneInput.focus();
+                return false;
+            }
+        });
+
+        // Animasi fadeIn
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes fadeIn {from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}`;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
